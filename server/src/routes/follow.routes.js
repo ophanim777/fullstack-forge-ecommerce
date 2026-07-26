@@ -37,6 +37,32 @@ router.post(
   followUser
 );
 
+
+
+/**
+ * @swagger
+ * /users/{id}/followers:
+ *   get:
+ *     summary: Mendapatkan daftar followers
+ *     tags:
+ *       - Follow
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cmrhtcc440000akynn5c4lhul
+ *     responses:
+ *       200:
+ *         description: Daftar followers berhasil diambil
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User tidak ditemukan
+ */
 router.get(
   "/users/:id/followers",
   authenticate,
