@@ -48,6 +48,38 @@ const router = Router();
  */
 
 router.post("/register", register);
+
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: ricky@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Login berhasil
+ *       401:
+ *         description: Email atau password salah
+ */
+
 router.post("/login", login);
 router.post("/refresh", refresh);
 router.post("/logout", logout);
