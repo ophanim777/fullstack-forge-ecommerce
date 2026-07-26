@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
+import { optionalAuth } from "../middleware/optionalAuth.middleware.js";
 import { createPost, 
     getPosts,  
     getPost, 
@@ -9,7 +10,7 @@ import { createPost,
 
 const router = Router();
 
-router.get("/", getPosts);
+router.get("/", optionalAuth, getPosts);
 
 router.get("/:id", getPost);
 
