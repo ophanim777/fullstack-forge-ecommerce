@@ -81,6 +81,22 @@ router.post("/register", register);
  */
 
 router.post("/login", login);
+
+
+
+/**
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     summary: Memperbarui access token menggunakan refresh token
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       200:
+ *         description: Access token berhasil diperbarui
+ *       401:
+ *         description: Refresh token tidak valid
+ */
 router.post("/refresh", refresh);
 router.post("/logout", logout);
 
