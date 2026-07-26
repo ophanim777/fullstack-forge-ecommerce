@@ -99,6 +99,43 @@ router.post("/", authenticate, createPost);
  */
 router.post("/:id/like", authenticate, likePost);
 
+
+/**
+ * @swagger
+ * /posts/{id}:
+ *   patch:
+ *     summary: Mengubah isi post
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cmrrz0wku0000ssyn9v01kozu
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - content
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 example: Post ini sudah diperbarui.
+ *     responses:
+ *       200:
+ *         description: Post berhasil diperbarui
+ *       403:
+ *         description: Tidak memiliki akses
+ *       404:
+ *         description: Post tidak ditemukan
+ */
 router.patch("/:id", authenticate, updatePost);
 
 router.delete("/:id", authenticate, deletePost);
