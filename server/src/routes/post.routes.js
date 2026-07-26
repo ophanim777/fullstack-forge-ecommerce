@@ -14,6 +14,33 @@ router.get("/", optionalAuth, getPosts);
 
 router.get("/:id", getPost);
 
+/**
+ * @swagger
+ * /posts:
+ *   post:
+ *     summary: Membuat post baru
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - content
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 example: Halo Odin Book!
+ *     responses:
+ *       201:
+ *         description: Post berhasil dibuat
+ *       401:
+ *         description: Unauthorized
+ */
 router.post("/", authenticate, createPost);
 
 router.post("/:id/like", authenticate, likePost);
