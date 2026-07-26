@@ -102,3 +102,25 @@ export async function updateComment(commentId, userId, data) {
     },
   });
 }
+
+export async function deleteComment(commentId, userId) {
+  const comment = await prisma.comment.findUnique({
+    where: {
+      id: commentId,
+    },
+  });
+
+  if (!comment) {
+    throw new ApiError(404, "Komentar tidak ditemukan.");
+  }
+
+  if (comment.userId !== userId) {
+    throw new ApiError(403, "Kamu tidak memiliki akses.");
+  }
+
+  await prisma.comment.delete({
+    where: {
+      id: commentId,
+    },
+  });
+}
