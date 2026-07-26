@@ -21,7 +21,7 @@ export async function createPost(userId, data) {
   });
 }
 
-export async function getAllPosts() {
+export async function getAllPosts(userId) {
   return await prisma.post.findMany({
     orderBy: {
       createdAt: "desc",
@@ -36,8 +36,26 @@ export async function getAllPosts() {
           avatar: true,
         },
       },
+
+      likes: {
+        select: {
+          userId: true,
+        },
+      },
     },
-  });
+  }).then((posts) =>
+    posts.map((post) => ({
+      ...post,
+
+      likesCount: post.likes.length,
+
+      isLiked: post.likes.some(
+        (like) => like.userId === userId
+      ),
+
+      likes: undefined,
+    }))
+  );
 }
 
 export async function getPostById(id) {
