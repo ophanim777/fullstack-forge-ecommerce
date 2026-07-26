@@ -1,5 +1,5 @@
 import { createCommentSchema, updateCommentSchema, } from "../validators/comment.validator.js";
-import { createComment as createCommentService, getComments, updateComment,} from "../services/comment.service.js";
+import { createComment as createCommentService, getComments, updateComment, deleteComment,} from "../services/comment.service.js";
 
 export async function createComment(req, res, next) {
   try {
@@ -52,6 +52,22 @@ export async function updateCommentById(
       success: true,
       message: "Komentar berhasil diperbarui.",
       comment,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteCommentById(req, res, next) {
+  try {
+    await deleteComment(
+      req.params.id,
+      req.user.id
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Komentar berhasil dihapus.",
     });
   } catch (error) {
     next(error);
