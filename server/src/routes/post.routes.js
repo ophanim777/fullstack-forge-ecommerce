@@ -138,6 +138,31 @@ router.post("/:id/like", authenticate, likePost);
  */
 router.patch("/:id", authenticate, updatePost);
 
+
+/**
+ * @swagger
+ * /posts/{id}:
+ *   delete:
+ *     summary: Menghapus post
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cmrrz0wku0000ssyn9v01kozu
+ *     responses:
+ *       200:
+ *         description: Post berhasil dihapus
+ *       403:
+ *         description: Tidak memiliki akses
+ *       404:
+ *         description: Post tidak ditemukan
+ */
 router.delete("/:id", authenticate, deletePost);
 
 export default router;
