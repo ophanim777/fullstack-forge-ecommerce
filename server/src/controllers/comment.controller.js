@@ -1,5 +1,5 @@
 import { createCommentSchema } from "../validators/comment.validator.js";
-import { createComment as createCommentService, getComments, } from "../services/comment.service.js";
+import { createComment as createCommentService, getComments, updateComment,} from "../services/comment.service.js";
 
 export async function createComment(req, res, next) {
   try {
@@ -28,6 +28,30 @@ export async function getCommentsByPost(req, res, next) {
     res.status(200).json({
       success: true,
       comments,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateCommentById(
+  req,
+  res,
+  next
+) {
+  try {
+    const body = updateCommentSchema.parse(req.body);
+
+    const comment = await updateComment(
+      req.params.id,
+      req.user.id,
+      body
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Komentar berhasil diperbarui.",
+      comment,
     });
   } catch (error) {
     next(error);
