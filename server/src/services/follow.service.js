@@ -51,3 +51,25 @@ export async function toggleFollow(targetUserId, currentUserId) {
     following: true,
   };
 }
+
+export async function getFollowers(userId) {
+  return await prisma.follow.findMany({
+    where: {
+      followingId: userId,
+    },
+    include: {
+      follower: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          avatar: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
