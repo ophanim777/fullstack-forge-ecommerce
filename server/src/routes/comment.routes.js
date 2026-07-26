@@ -43,6 +43,28 @@ const router = Router();
  */
 router.post("/posts/:id/comments", authenticate, createComment);
 
+
+
+/**
+ * @swagger
+ * /posts/{id}/comments:
+ *   get:
+ *     summary: Mendapatkan semua komentar pada sebuah post
+ *     tags:
+ *       - Comments
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cmrrz0wku0000ssyn9v01kozu
+ *     responses:
+ *       200:
+ *         description: Berhasil mendapatkan daftar komentar
+ *       404:
+ *         description: Post tidak ditemukan
+ */
 router.get(
   "/posts/:id/comments",
   getCommentsByPost
