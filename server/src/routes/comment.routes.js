@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { createComment, getCommentsByPost, updateCommentById,} from "../controllers/comment.controller.js";
+import { createComment, getCommentsByPost, updateCommentById, deleteCommentById, } from "../controllers/comment.controller.js";
 
 const router = Router();
 
@@ -17,4 +17,9 @@ router.patch(
   updateCommentById
 );
 
+router.delete(
+  "/comments/:id",
+  authenticate,
+  deleteCommentById
+);
 export default router;
