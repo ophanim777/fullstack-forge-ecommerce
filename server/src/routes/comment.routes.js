@@ -116,6 +116,34 @@ router.patch(
   updateCommentById
 );
 
+
+
+/**
+ * @swagger
+ * /comments/{id}:
+ *   delete:
+ *     summary: Menghapus komentar
+ *     tags:
+ *       - Comments
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cms18ko2a000064ynb87neaip
+ *     responses:
+ *       200:
+ *         description: Komentar berhasil dihapus
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Tidak memiliki akses
+ *       404:
+ *         description: Komentar tidak ditemukan
+ */
 router.delete(
   "/comments/:id",
   authenticate,
