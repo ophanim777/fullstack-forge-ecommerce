@@ -23,6 +23,26 @@ const router = Router();
  */
 router.get("/", optionalAuth, getPosts);
 
+/**
+ * @swagger
+ * /posts/{id}:
+ *   get:
+ *     summary: Mendapatkan detail post
+ *     tags:
+ *       - Posts
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cmrrz0wku0000ssyn9v01kozu
+ *     responses:
+ *       200:
+ *         description: Detail post berhasil diambil
+ *       404:
+ *         description: Post tidak ditemukan
+ */
 router.get("/:id", getPost);
 
 /**
