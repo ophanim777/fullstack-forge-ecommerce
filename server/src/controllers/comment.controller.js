@@ -1,4 +1,4 @@
-import { createCommentSchema } from "../validators/comment.validator.js";
+import { createCommentSchema, updateCommentSchema, } from "../validators/comment.validator.js";
 import { createComment as createCommentService, getComments, updateComment,} from "../services/comment.service.js";
 
 export async function createComment(req, res, next) {
