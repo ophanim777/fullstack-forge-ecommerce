@@ -98,6 +98,20 @@ router.post("/login", login);
  *         description: Refresh token tidak valid
  */
 router.post("/refresh", refresh);
+
+
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       200:
+ *         description: Logout berhasil
+ */
 router.post("/logout", logout);
 
 
