@@ -10,6 +10,17 @@ import { createPost,
 
 const router = Router();
 
+/**
+ * @swagger
+ * /posts:
+ *   get:
+ *     summary: Mendapatkan semua post
+ *     tags:
+ *       - Posts
+ *     responses:
+ *       200:
+ *         description: Berhasil mendapatkan daftar post
+ */
 router.get("/", optionalAuth, getPosts);
 
 router.get("/:id", getPost);
