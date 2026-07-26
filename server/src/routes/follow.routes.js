@@ -69,6 +69,32 @@ router.get(
   getFollowersByUser
 );
 
+
+
+/**
+ * @swagger
+ * /users/{id}/following:
+ *   get:
+ *     summary: Mendapatkan daftar user yang sedang di-follow
+ *     tags:
+ *       - Follow
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cmrhtcc440000akynn5c4lhul
+ *     responses:
+ *       200:
+ *         description: Daftar following berhasil diambil
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User tidak ditemukan
+ */
 router.get(
   "/users/:id/following",
   authenticate,
