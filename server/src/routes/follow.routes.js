@@ -5,6 +5,32 @@ import { followUser, getFollowersByUser,
 
 const router = Router();
 
+
+
+/**
+ * @swagger
+ * /users/{id}/follow:
+ *   post:
+ *     summary: Follow atau Unfollow user
+ *     tags:
+ *       - Follow
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cmrhtcc440000akynn5c4lhul
+ *     responses:
+ *       200:
+ *         description: Status follow berhasil diubah
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User tidak ditemukan
+ */
 router.post(
   "/users/:id/follow",
   authenticate,
