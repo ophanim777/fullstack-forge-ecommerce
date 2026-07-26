@@ -54,7 +54,9 @@ export async function getFeed(userId, page = 1, limit = 10) {
     take: limit,
   });
 
-  return posts.map(post => ({
+  return  {
+  total,
+  posts: posts.map(post => ({
     id: post.id,
     content: post.content,
     image: post.image,
@@ -66,5 +68,6 @@ export async function getFeed(userId, page = 1, limit = 10) {
     isLiked: post.likes.some(
       like => like.userId === userId
     ),
-  }));
-}
+  })),
+};
+};
