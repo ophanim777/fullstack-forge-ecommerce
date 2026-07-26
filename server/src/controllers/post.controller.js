@@ -26,7 +26,7 @@ export async function createPost(req, res, next) {
 
 export async function getPosts(req, res, next) {
   try {
-    const posts = await getAllPosts();
+    const posts = await getAllPosts(req.user?.id);
 
     res.status(200).json({
       success: true,
