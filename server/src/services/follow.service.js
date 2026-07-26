@@ -73,3 +73,25 @@ export async function getFollowers(userId) {
     },
   });
 }
+
+export async function getFollowing(userId) {
+  return await prisma.follow.findMany({
+    where: {
+      followerId: userId,
+    },
+    include: {
+      following: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          avatar: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
