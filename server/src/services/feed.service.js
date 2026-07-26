@@ -1,6 +1,9 @@
 import { prisma } from "../config/prisma.js";
 
-export async function getFeed(userId) {
+export async function getFeed(userId, page = 1, limit = 10) {
+
+  const skip = (page - 1) * limit;
+
   // Ambil semua user yang sedang diikuti
   const following = await prisma.follow.findMany({
     where: {
@@ -39,6 +42,8 @@ export async function getFeed(userId) {
     orderBy: {
       createdAt: "desc",
     },
+    skip,
+    take: limit,
   });
 
   return posts.map(post => ({
