@@ -84,6 +84,22 @@ router.post("/login", login);
 router.post("/refresh", refresh);
 router.post("/logout", logout);
 
+
+/**
+ * @swagger
+ * /auth/me:
+ *   get:
+ *     summary: Mendapatkan profil user yang sedang login
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Berhasil mendapatkan profil user
+ *       401:
+ *         description: Token tidak valid atau belum login
+ */
 router.get("/me", authenticate, getMe);
 
 export default router;
