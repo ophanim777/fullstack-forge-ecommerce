@@ -74,6 +74,29 @@ router.get("/:id", getPost);
  */
 router.post("/", authenticate, createPost);
 
+/**
+ * @swagger
+ * /posts/{id}/like:
+ *   post:
+ *     summary: Like atau Unlike sebuah post
+ *     tags:
+ *       - Likes
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Berhasil mengubah status like
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Post tidak ditemukan
+ */
 router.post("/:id/like", authenticate, likePost);
 
 router.patch("/:id", authenticate, updatePost);
