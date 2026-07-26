@@ -19,6 +19,14 @@ export async function getFeed(userId, page = 1, limit = 10) {
   // Sertakan post milik sendiri
   followingIds.push(userId);
 
+  const total = await prisma.post.count({
+  where: {
+    authorId: {
+      in: followingIds,
+    },
+  },
+});
+
   // Ambil semua post
   const posts = await prisma.post.findMany({
     where: {
