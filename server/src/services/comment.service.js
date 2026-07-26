@@ -31,3 +31,35 @@ export async function createComment(postId, userId, data) {
     },
   });
 }
+
+export async function getComments(postId) {
+  const post = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+  });
+
+  if (!post) {
+    throw new ApiError(404, "Post tidak ditemukan.");
+  }
+
+  return await prisma.comment.findMany({
+    where: {
+      postId,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          avatar: true,
+        },
+      },
+    },
+  });
+}
