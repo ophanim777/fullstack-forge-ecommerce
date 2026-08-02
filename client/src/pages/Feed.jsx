@@ -26,6 +26,13 @@ export default function Feed() {
   setPosts((prevPosts) => [post, ...prevPosts]);
 }
 
+
+  function handleDeletePost(postId) {
+  setPosts((prevPosts) =>
+    prevPosts.filter((post) => post.id !== postId)
+  );
+}
+
   return (
     <MainLayout>
       <h1 className="text-3xl font-bold mb-6">
