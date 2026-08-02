@@ -1,20 +1,26 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Feed from "./pages/Feed";
+import Profile from "./pages/Profile";
+
 function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100">
-      <div className="bg-white shadow-lg rounded-xl p-8">
-        <h1 className="text-4xl font-bold text-blue-600">
-          Odin Book
-        </h1>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Feed />} />
 
-        <p className="mt-3 text-gray-600">
-          Tailwind CSS berhasil dipasang.
-        </p>
+        <Route path="/login" element={<Login />} />
 
-        <button className="mt-6 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
-          Mulai
-        </button>
-      </div>
-    </div>
+        <Route path="/register" element={<Register />} />
+
+        <Route
+          path="/profile/:username"
+          element={<Profile />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
