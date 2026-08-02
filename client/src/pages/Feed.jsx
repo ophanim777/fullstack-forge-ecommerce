@@ -32,6 +32,10 @@ export default function Feed() {
         Feed
       </h1>
 
+      <CreatePost
+        onPostCreated={handlePostCreated}
+      />
+
       <div className="space-y-4">
         {posts.map((post) => (
           <PostCard
