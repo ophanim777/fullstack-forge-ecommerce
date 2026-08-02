@@ -27,6 +27,10 @@ export function AuthProvider({ children }) {
   }
 }
 
+  useEffect(() => {
+    loadUser();
+  }, []);
+
   async function logout() {
     await authService.logout();
 
