@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import MainLayout from "../layouts/MainLayout";
 import PostCard from "../components/PostCard";
+import CreatePost from "../components/CreatePost";
 import * as postService from "../services/post.service";
 
 export default function Feed() {
@@ -20,6 +21,10 @@ export default function Feed() {
       console.error(error);
     }
   }
+
+  function handlePostCreated(post) {
+  setPosts((prevPosts) => [post, ...prevPosts]);
+}
 
   return (
     <MainLayout>
