@@ -51,12 +51,21 @@ export default function PostCard({ post }) {
         {post.content}
       </p>
 
-      <div className="flex items-center justify-between text-sm text-gray-500">
-        <span>❤️ {post.likesCount} Likes</span>
+      <div className="flex justify-between items-center">
+        <button
+          onClick={handleLike}
+          className="text-red-500 font-semibold"
+        >
+          {liked ? "❤️ Unlike" : "🤍 Like"}
+        </button>
 
-        <span>
-          {new Date(post.createdAt).toLocaleString()}
+        <span className="text-gray-500">
+          {likesCount} Likes
         </span>
+      </div>
+
+      <div className="mt-3 text-sm text-gray-400">
+        {new Date(post.createdAt).toLocaleString()}
       </div>
     </div>
   );
