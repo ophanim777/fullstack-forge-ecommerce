@@ -15,6 +15,18 @@ export function AuthProvider({ children }) {
     return response;
   }
 
+  async function loadUser() {
+  try {
+    const response = await authService.getMe();
+
+    setUser(response.user);
+  } catch (error) {
+    setUser(null);
+  } finally {
+    setLoading(false);
+  }
+}
+
   async function logout() {
     await authService.logout();
 
