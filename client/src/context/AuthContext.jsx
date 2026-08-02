@@ -8,12 +8,23 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   async function login(data) {
-    const response = await authService.login(data);
+  const response = await authService.login(data);
 
-    setUser(response.user);
+  localStorage.setItem(
+    "accessToken",
+    response.accessToken
+  );
 
-    return response;
-  }
+  localStorage.setItem(
+    "refreshToken",
+    response.refreshToken
+  );
+
+  setUser(response.user);
+  setLoading(false);
+
+  return response;
+}
 
   async function loadUser() {
   try {
