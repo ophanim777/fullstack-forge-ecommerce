@@ -48,6 +48,7 @@ export default function Feed() {
           <PostCard
             key={post.id}
             post={post}
+            onDelete={handleDeletePost}
           />
         ))}
       </div>
