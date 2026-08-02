@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -9,7 +10,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Feed />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Feed />
+            </ProtectedRoute>
+          }/>
 
         <Route path="/login" element={<Login />} />
 
@@ -17,7 +24,11 @@ function App() {
 
         <Route
           path="/profile/:username"
-          element={<Profile />}
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </BrowserRouter>
