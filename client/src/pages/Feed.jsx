@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import MainLayout from "../layouts/MainLayout";
+import PostCard from "../components/PostCard";
 import * as postService from "../services/post.service";
 
 export default function Feed() {
@@ -26,9 +27,14 @@ export default function Feed() {
         Feed
       </h1>
 
-      <pre>
-        {JSON.stringify(posts, null, 2)}
-      </pre>
+      <div className="space-y-4">
+        {posts.map((post) => (
+          <PostCard
+            key={post.id}
+            post={post}
+          />
+        ))}
+      </div>
     </MainLayout>
   );
 }
