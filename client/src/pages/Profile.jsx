@@ -1,3 +1,3 @@
-export default function Feed() {
-  return <h1>Feed Page</h1>;
+export default function Profile() {
+  return <h1>Profile Page</h1>;
 }
