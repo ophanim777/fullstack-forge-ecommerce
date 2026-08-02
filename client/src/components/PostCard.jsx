@@ -2,7 +2,7 @@ import * as postService from "../services/post.service";
 import { useState } from "react";
 
 
-export default function PostCard({ post }) {
+export default function PostCard({ post, onDelete, }) {
   const [liked, setLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
 
@@ -25,6 +25,25 @@ export default function PostCard({ post }) {
     }
   }
 
+
+  async function handleDelete() {
+  const confirmDelete = window.confirm(
+    "Yakin ingin menghapus post ini?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    await postService.deletePost(post.id);
+
+    onDelete(post.id);
+  } catch (error) {
+    alert(
+      error.response?.data?.message ||
+      "Gagal menghapus post."
+    );
+  }
+}
     
     
   return (
