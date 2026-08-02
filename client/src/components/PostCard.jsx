@@ -78,6 +78,13 @@ export default function PostCard({ post, onDelete, }) {
           {liked ? "❤️ Unlike" : "🤍 Like"}
         </button>
 
+        <button
+            onClick={handleDelete}
+            className="text-gray-600 font-semibold"
+            >
+            🗑️ Delete
+            </button>
+
         <span className="text-gray-500">
           {likesCount} Likes
         </span>
