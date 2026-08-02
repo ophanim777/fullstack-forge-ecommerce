@@ -1,3 +1,11 @@
+import MainLayout from "../layouts/MainLayout";
+
 export default function Feed() {
-  return <h1>Feed Page</h1>;
+  return (
+    <MainLayout>
+      <h1 className="text-3xl font-bold">
+        Feed
+      </h1>
+    </MainLayout>
+  );
 }
