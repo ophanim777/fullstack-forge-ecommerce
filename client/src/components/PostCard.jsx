@@ -1,4 +1,32 @@
+import * as postService from "../services/post.service";
+import { useState } from "react";
+
+
 export default function PostCard({ post }) {
+  const [liked, setLiked] = useState(post.isLiked);
+  const [likesCount, setLikesCount] = useState(post.likesCount);
+
+  async function handleLike() {
+    try {
+      const response = await postService.likePost(post.id);
+
+      if (response.liked) {
+        setLiked(true);
+        setLikesCount((prev) => prev + 1);
+      } else {
+        setLiked(false);
+        setLikesCount((prev) => prev - 1);
+      }
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Gagal memberi like."
+      );
+    }
+  }
+
+    
+    
   return (
     <div className="bg-white rounded-xl shadow p-5 mb-4">
       <div className="flex items-center gap-3 mb-4">
