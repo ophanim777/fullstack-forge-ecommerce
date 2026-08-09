@@ -5,6 +5,8 @@ import { useState } from "react";
 export default function PostCard({ post, onDelete, }) {
   const [liked, setLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
+  const [editing, setEditing] = useState(false);
+  const [editContent, setEditContent] = useState(post.content);
 
   async function handleLike() {
     try {
