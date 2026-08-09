@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { getUserProfile, updateProfile, uploadAvatar, toggleFollow,
-  getFollowing, } from "../services/user.service";
+  getFollowing, getFollowers, } from "../services/user.service";
 import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
