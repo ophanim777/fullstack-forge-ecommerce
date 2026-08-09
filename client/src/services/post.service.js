@@ -16,7 +16,7 @@ export async function createPost(data) {
 }
 
 export async function updatePost(id, data) {
-  const response = await api.put(`/posts/${id}`, data);
+  const response = await api.patch(`/posts/${id}`, data);
   return response.data;
 }
 
