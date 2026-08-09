@@ -30,24 +30,6 @@ export async function uploadAvatar(file) {
   return response.data;
 }
 
-export async function getUserById(userId) {
-  return prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      username: true,
-      email: true,
-      bio: true,
-      avatar: true,
-      role: true,
-    },
-  });
-}
-
 export async function toggleFollow(userId) {
   const response = await api.post(`/users/${userId}/follow`);
 
