@@ -62,7 +62,7 @@ export default function Profile() {
       });
 
       await loadFollowStatus(response.user.id);
-      
+
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -72,6 +72,25 @@ export default function Profile() {
       setLoading(false);
     }
   }
+  
+  async function handleFollow() {
+  if (!user) return;
+
+  try {
+    setFollowLoading(true);
+
+    const response = await toggleFollow(user.id);
+
+    setFollowing(response.following);
+  } catch (error) {
+    alert(
+      error.response?.data?.message ||
+        "Gagal mengubah status follow."
+    );
+  } finally {
+    setFollowLoading(false);
+  }
+}
 
   useEffect(() => {
     loadProfile();
