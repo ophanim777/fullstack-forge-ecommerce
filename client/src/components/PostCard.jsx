@@ -46,6 +46,26 @@ export default function PostCard({ post, onDelete, }) {
     );
   }
 }
+
+  async function handleUpdate() {
+  try {
+    const response = await postService.updatePost(
+      post.id,
+      {
+        content: editContent,
+      }
+    );
+
+    onUpdate(response.post);
+
+    setEditing(false);
+  } catch (error) {
+    alert(
+      error.response?.data?.message ||
+      "Gagal mengupdate post."
+    );
+  }
+}
     
     
   return (
