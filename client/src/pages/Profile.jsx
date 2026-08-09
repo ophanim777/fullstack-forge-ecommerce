@@ -28,7 +28,23 @@ export default function Profile() {
   const [following, setFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
 
-  
+  async function loadFollowStatus(userId) {
+  if (!currentUser || currentUser.id === userId) {
+    return;
+  }
+
+  try {
+    const response = await getFollowing(currentUser.id);
+
+    const isFollowing = response.following.some(
+      (item) => item.following.id === userId
+    );
+
+    setFollowing(isFollowing);
+  } catch (error) {
+    console.error("Gagal mengecek status follow:", error);
+  }
+}
 
   async function loadProfile() {
     try {
