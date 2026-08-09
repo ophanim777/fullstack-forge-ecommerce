@@ -4,6 +4,7 @@ import { loginSchema } from "../validators/auth.validator.js";
 import { loginUser } from "../services/auth.service.js";
 import { refreshTokenSchema } from "../validators/auth.validator.js";
 import { refreshAccessToken } from "../services/auth.service.js";
+import { getUserById } from "../services/user.service.js";
 
 export async function register(req, res, next) {
   try {
@@ -69,11 +70,24 @@ export async function refresh(req, res, next) {
   }
 }
 
-export async function getMe(req, res) {
-  res.status(200).json({
-    success: true,
-    user: req.user,
-  });
+export async function getMe(req, res, next) {
+  try {
+    const user = await getUserById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function logout(req, res) {
