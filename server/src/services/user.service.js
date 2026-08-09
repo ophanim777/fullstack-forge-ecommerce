@@ -43,3 +43,33 @@ export async function updateAvatar(userId, avatarPath) {
     },
   });
 }
+
+export async function getProfileByUsername(username) {
+  return prisma.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      username: true,
+      bio: true,
+      avatar: true,
+      role: true,
+
+      posts: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          id: true,
+          content: true,
+          image: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+    },
+  });
+}
