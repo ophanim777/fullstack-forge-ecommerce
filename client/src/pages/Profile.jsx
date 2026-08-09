@@ -40,6 +40,26 @@ export default function Profile() {
 
   const [listLoading, setListLoading] = useState(false);
 
+  async function loadFollowers() {
+  if (!user) return;
+
+  try {
+    setListLoading(true);
+
+    const response = await getFollowers(user.id);
+
+    setFollowers(response.followers);
+    setShowFollowers(true);
+    setShowFollowing(false);
+  } catch (error) {
+    alert(
+      error.response?.data?.message ||
+        "Gagal mengambil daftar followers."
+    );
+  } finally {
+    setListLoading(false);
+  }
+}
 
   async function loadFollowStatus(userId) {
   if (!currentUser || currentUser.id === userId) {
