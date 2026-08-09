@@ -12,7 +12,13 @@ import { errorHandler } from "./middleware/error.middleware.js";
 const app = express();
 
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: {
+      policy: "cross-origin",
+    },
+  })
+);
 app.use(
   cors({
     origin: "http://localhost:5173",
