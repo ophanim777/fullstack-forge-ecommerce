@@ -556,8 +556,16 @@ async function loadFollowing() {
                           </div>
                         )}
 
-                        <div>
-                          <p className="font-semibold">
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setShowFollowers(false);
+                            setShowFollowing(false);
+
+                            window.location.href = `/profile/${person.username}`;
+                          }}
+                        >
+                          <p className="font-semibold hover:text-blue-600">
                             {person.firstName} {person.lastName}
                           </p>
 
