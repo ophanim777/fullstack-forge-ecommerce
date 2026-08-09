@@ -47,3 +47,21 @@ export async function getUserById(userId) {
     },
   });
 }
+
+export async function toggleFollow(userId) {
+  const response = await api.post(`/users/${userId}/follow`);
+
+  return response.data;
+}
+
+export async function getFollowers(userId) {
+  const response = await api.get(`/users/${userId}/followers`);
+
+  return response.data;
+}
+
+export async function getFollowing(userId) {
+  const response = await api.get(`/users/${userId}/following`);
+
+  return response.data;
+}
