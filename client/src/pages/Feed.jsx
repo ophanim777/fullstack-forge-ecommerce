@@ -58,6 +58,7 @@ export default function Feed() {
             key={post.id}
             post={post}
             onDelete={handleDeletePost}
+            onUpdate={handleUpdatePost}
           />
         ))}
       </div>
