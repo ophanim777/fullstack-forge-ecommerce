@@ -267,6 +267,20 @@ export default function Profile() {
               </button>
             )}
 
+            {!isOwnProfile && currentUser && (
+            <button
+              onClick={handleFollow}
+              disabled={followLoading}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {followLoading
+                ? "Loading..."
+                : following
+                ? "Unfollow"
+                : "Follow"}
+            </button>
+)}
+
           </div>
 
           {/* EDIT FORM */}
