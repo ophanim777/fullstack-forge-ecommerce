@@ -72,7 +72,11 @@ export default function PostCard({ post, onDelete, onUpdate, }) {
     <div className="bg-white rounded-xl shadow p-5 mb-4">
       <div className="flex items-center gap-3 mb-4">
         <img
-          src={`http://localhost:5000${post.author.avatar}`}
+          src={
+            post.author.avatar
+              ? `http://localhost:5000${post.author.avatar}`
+              : "https://via.placeholder.com/48"
+          }
           alt={post.author.username}
           className="w-12 h-12 rounded-full object-cover"
         />
