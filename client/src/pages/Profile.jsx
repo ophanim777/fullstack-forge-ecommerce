@@ -543,7 +543,12 @@ async function loadFollowing() {
                     return (
                       <div
                         key={person.id}
-                        className="flex items-center gap-3 border-b pb-3"
+                        onClick={() => {
+                          setShowFollowers(false);
+                          setShowFollowing(false);
+                          navigate(`/profile/${person.username}`);
+                        }}
+                        className="flex items-center gap-3 border-b pb-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg"
                       >
 
                         {person.avatar ? (
