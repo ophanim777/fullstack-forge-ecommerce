@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, } from "react-router-dom";
 
 import { getUserProfile, updateProfile, uploadAvatar, toggleFollow,
   getFollowing, getFollowers, } from "../services/user.service";
@@ -7,6 +7,8 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
   const { username } = useParams();
+
+   const navigate = useNavigate();
 
   const { user: currentUser } = useAuth();
 
@@ -562,7 +564,7 @@ async function loadFollowing() {
                             setShowFollowers(false);
                             setShowFollowing(false);
 
-                            window.location.href = `/profile/${person.username}`;
+                            navigate(`/profile/${person.username}`);
                           }}
                         >
                           <p className="font-semibold hover:text-blue-600">
