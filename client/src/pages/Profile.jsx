@@ -60,6 +60,9 @@ export default function Profile() {
         lastName: response.user.lastName || "",
         bio: response.user.bio || "",
       });
+
+      await loadFollowStatus(response.user.id);
+      
     } catch (error) {
       setError(
         error.response?.data?.message ||
