@@ -50,6 +50,26 @@ export default function Profile() {
   }
 }
 
+
+  async function loadFollowCounts(userId) {
+  try {
+    const [followersResponse, followingResponse] =
+      await Promise.all([
+        getFollowers(userId),
+        getFollowing(userId),
+      ]);
+
+    setFollowersCount(followersResponse.count);
+    setFollowingCount(followingResponse.count);
+  } catch (error) {
+    console.error(
+      "Gagal mengambil jumlah followers/following:",
+      error
+    );
+  }
+}
+
+
   async function loadProfile() {
     try {
       setLoading(true);
