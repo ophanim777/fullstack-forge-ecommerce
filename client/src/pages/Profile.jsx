@@ -465,19 +465,26 @@ async function loadFollowing() {
                 Posts
               </div>
 
-              <div>
+              <button
+                onClick={loadFollowers}
+                className="hover:text-blue-600"
+              >
                 <span className="font-bold">
                   {followersCount}
                 </span>{" "}
                 Followers
-              </div>
+              </button>
 
-              <div>
+              <button
+                onClick={loadFollowing}
+                className="hover:text-blue-600"
+              >
                 <span className="font-bold">
                   {followingCount}
                 </span>{" "}
                 Following
-              </div>
+              </button>
+
 
             </div>
           </div>
