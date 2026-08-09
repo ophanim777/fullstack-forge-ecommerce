@@ -32,6 +32,10 @@ export default function Profile() {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
 
+  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
+
+
   async function loadFollowStatus(userId) {
   if (!currentUser || currentUser.id === userId) {
     return;
