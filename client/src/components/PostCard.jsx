@@ -88,9 +88,40 @@ export default function PostCard({ post, onDelete, }) {
         </div>
       </div>
 
-      <p className="mb-4 whitespace-pre-wrap">
-        {post.content}
-      </p>
+      {editing ? (
+  <>
+    <textarea
+      value={editContent}
+      onChange={(e) =>
+        setEditContent(e.target.value)
+      }
+      className="border rounded-lg w-full p-3 mb-3"
+    />
+
+    <div className="flex gap-2">
+      <button
+        onClick={handleUpdate}
+        className="bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        Save
+      </button>
+
+      <button
+        onClick={() => {
+          setEditing(false);
+          setEditContent(post.content);
+        }}
+        className="bg-gray-300 px-4 py-2 rounded"
+      >
+        Cancel
+      </button>
+    </div>
+  </>
+      ) : (
+        <p className="mb-4 whitespace-pre-wrap">
+          {post.content}
+        </p>
+      )}
 
       <div className="flex justify-between items-center">
         <button
