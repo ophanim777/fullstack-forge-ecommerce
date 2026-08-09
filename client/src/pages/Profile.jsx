@@ -61,6 +61,29 @@ export default function Profile() {
   }
 }
 
+
+async function loadFollowing() {
+  if (!user) return;
+
+  try {
+    setListLoading(true);
+
+    const response = await getFollowing(user.id);
+
+    setFollowingUsers(response.following);
+    setShowFollowing(true);
+    setShowFollowers(false);
+  } catch (error) {
+    alert(
+      error.response?.data?.message ||
+        "Gagal mengambil daftar following."
+    );
+  } finally {
+    setListLoading(false);
+  }
+}
+
+
   async function loadFollowStatus(userId) {
   if (!currentUser || currentUser.id === userId) {
     return;
