@@ -81,6 +81,8 @@ export default function Profile() {
 
       await loadFollowStatus(response.user.id);
 
+      await loadFollowCounts(response.user.id);
+
       setForm({
         firstName: response.user.firstName || "",
         lastName: response.user.lastName || "",
