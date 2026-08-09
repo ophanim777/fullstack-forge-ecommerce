@@ -132,6 +132,13 @@ export default function PostCard({ post, onDelete, }) {
         </button>
 
         <button
+        onClick={() => setEditing(true)}
+        className="text-blue-600 font-semibold"
+        >
+        ✏️ Edit
+        </button> 
+
+        <button
             onClick={handleDelete}
             className="text-gray-600 font-semibold"
             >
