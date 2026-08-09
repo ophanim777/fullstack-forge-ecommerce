@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { getUserProfile, updateProfile, uploadAvatar } from "../services/user.service";
+import { getUserProfile, updateProfile, uploadAvatar, toggleFollow,
+  getFollowing, } from "../services/user.service";
 import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
@@ -55,13 +56,13 @@ export default function Profile() {
 
       setUser(response.user);
 
+      await loadFollowStatus(response.user.id);
+
       setForm({
         firstName: response.user.firstName || "",
         lastName: response.user.lastName || "",
         bio: response.user.bio || "",
       });
-
-      await loadFollowStatus(response.user.id);
 
     } catch (error) {
       setError(
