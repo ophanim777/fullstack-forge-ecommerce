@@ -491,6 +491,93 @@ async function loadFollowing() {
 
         </div>
 
+          {/* FOLLOWERS / FOLLOWING LIST */}
+        {(showFollowers || showFollowing) && (
+          <div className="bg-white rounded-xl shadow p-6 mb-6">
+
+            <div className="flex justify-between items-center mb-4">
+
+              <h2 className="text-xl font-bold">
+                {showFollowers ? "Followers" : "Following"}
+              </h2>
+
+              <button
+                onClick={() => {
+                  setShowFollowers(false);
+                  setShowFollowing(false);
+                }}
+                className="text-gray-500 hover:text-gray-800"
+              >
+                ✕
+              </button>
+
+            </div>
+
+            {listLoading ? (
+              <p className="text-gray-500">
+                Memuat...
+              </p>
+            ) : (
+              <div className="space-y-3">
+
+                {(showFollowers
+                  ? followers
+                  : followingUsers
+                ).length === 0 ? (
+                  <p className="text-gray-500">
+                    Belum ada user.
+                  </p>
+                ) : (
+                  (showFollowers
+                    ? followers
+                    : followingUsers
+                  ).map((item) => {
+
+                    const person =
+                      showFollowers
+                        ? item.follower
+                        : item.following;
+
+                    return (
+                      <div
+                        key={person.id}
+                        className="flex items-center gap-3 border-b pb-3"
+                      >
+
+                        {person.avatar ? (
+                          <img
+                            src={`http://localhost:5000${person.avatar}`}
+                            alt={person.username}
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
+                            👤
+                          </div>
+                        )}
+
+                        <div>
+                          <p className="font-semibold">
+                            {person.firstName} {person.lastName}
+                          </p>
+
+                          <p className="text-sm text-gray-500">
+                            @{person.username}
+                          </p>
+                        </div>
+
+                      </div>
+                    );
+                  })
+                )}
+
+              </div>
+            )}
+
+          </div>
+        )}
+
+
         {/* POSTS */}
         <div className="space-y-4">
 
