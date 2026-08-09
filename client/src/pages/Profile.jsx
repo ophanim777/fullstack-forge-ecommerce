@@ -99,7 +99,7 @@ export default function Profile() {
     }
   }
   
-  async function handleFollow() {
+ async function handleFollow() {
   if (!user) return;
 
   try {
@@ -108,6 +108,12 @@ export default function Profile() {
     const response = await toggleFollow(user.id);
 
     setFollowing(response.following);
+
+    if (response.following) {
+      setFollowersCount((prev) => prev + 1);
+    } else {
+      setFollowersCount((prev) => Math.max(0, prev - 1));
+    }
   } catch (error) {
     alert(
       error.response?.data?.message ||
