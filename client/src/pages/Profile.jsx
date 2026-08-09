@@ -398,14 +398,30 @@ export default function Profile() {
 
           {/* POST COUNT */}
           <div className="border-t mt-5 pt-4">
+            <div className="flex gap-8 text-gray-600">
 
-            <p className="text-gray-600">
-              <span className="font-bold">
-                {user.posts.length}
-              </span>{" "}
-              Posts
-            </p>
+              <div>
+                <span className="font-bold">
+                  {user.posts.length}
+                </span>{" "}
+                Posts
+              </div>
 
+              <div>
+                <span className="font-bold">
+                  {followersCount}
+                </span>{" "}
+                Followers
+              </div>
+
+              <div>
+                <span className="font-bold">
+                  {followingCount}
+                </span>{" "}
+                Following
+              </div>
+
+            </div>
           </div>
 
         </div>
