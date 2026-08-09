@@ -2,7 +2,7 @@ import * as postService from "../services/post.service";
 import { useState } from "react";
 
 
-export default function PostCard({ post, onDelete, }) {
+export default function PostCard({ post, onDelete, onUpdate, }) {
   const [liked, setLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
   const [editing, setEditing] = useState(false);
