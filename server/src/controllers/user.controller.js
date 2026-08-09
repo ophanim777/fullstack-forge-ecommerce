@@ -1,6 +1,7 @@
 import { updateProfileSchema } from "../validators/user.validator.js";
 import { updateProfile } from "../services/user.service.js";
 import { updateAvatar } from "../services/user.service.js";
+import { getProfileByUsername, } from "../services/user.service.js";
 
 export async function updateUserProfile(req, res, next) {
   try {
@@ -37,6 +38,28 @@ export async function uploadAvatar(req, res, next) {
     res.status(200).json({
       success: true,
       message: "Avatar berhasil diupload.",
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getUserProfile(req, res, next) {
+  try {
+    const user = await getProfileByUsername(
+      req.params.username
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
       user,
     });
   } catch (error) {
