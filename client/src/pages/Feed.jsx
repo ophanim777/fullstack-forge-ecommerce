@@ -33,6 +33,15 @@ export default function Feed() {
   );
 }
 
+  function handleUpdatePost(updatedPost) {
+  setPosts((prevPosts) =>
+    prevPosts.map((post) =>
+      post.id === updatedPost.id
+        ? updatedPost
+        : post
+    )
+  );
+}
   return (
     <MainLayout>
       <h1 className="text-3xl font-bold mb-6">
