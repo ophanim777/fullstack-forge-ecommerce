@@ -73,3 +73,22 @@ export async function getProfileByUsername(username) {
     },
   });
 }
+
+export async function getUserById(userId) {
+  return prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      username: true,
+      email: true,
+      bio: true,
+      avatar: true,
+      role: true,
+    },
+  });
+}
