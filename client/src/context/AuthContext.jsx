@@ -45,6 +45,9 @@ export function AuthProvider({ children }) {
   async function logout() {
     await authService.logout();
 
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+
     setUser(null);
   }
 
