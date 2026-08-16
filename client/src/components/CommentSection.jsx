@@ -179,29 +179,38 @@ export default function CommentSection({
   // =========================
 
   async function handleDelete(commentId) {
-    const confirmed = window.confirm(
-      "Yakin ingin menghapus komentar ini?"
-    );
+  const confirmed = window.confirm(
+    "Yakin ingin menghapus komentar ini?"
+  );
 
-    if (!confirmed) return;
+  if (!confirmed) return;
 
-    try {
-      await deleteComment(commentId);
+  try {
+    await deleteComment(commentId);
 
-      setComments((prev) =>
-        prev.filter(
+    setComments((prev) =>
+      prev
+        // Hapus komentar utama
+        .filter(
           (comment) => comment.id !== commentId
         )
-      );
+        // Hapus reply
+        .map((comment) => ({
+          ...comment,
+          replies: (comment.replies || []).filter(
+            (reply) => reply.id !== commentId
+          ),
+        }))
+    );
 
-      onCommentCountChange?.(-1);
-    } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          "Gagal menghapus komentar."
-      );
-    }
+    onCommentCountChange?.(-1);
+  } catch (error) {
+    alert(
+      error.response?.data?.message ||
+        "Gagal menghapus komentar."
+    );
   }
+}
 
   // =========================
   // RENDER
