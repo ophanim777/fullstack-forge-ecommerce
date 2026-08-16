@@ -160,6 +160,151 @@ export default function CommentSection({ postId }) {
           {submitting ? "..." : "Kirim"}
         </button>
       </form>
+
+
+          {/* DAFTAR KOMENTAR */}
+
+      {loading ? (
+        <p className="text-gray-500 text-sm">
+          Memuat komentar...
+        </p>
+      ) : comments.length === 0 ? (
+        <p className="text-gray-500 text-sm">
+          Belum ada komentar.
+        </p>
+      ) : (
+        <div className="space-y-3">
+
+          {comments.map((comment) => {
+
+            const isOwner =
+              currentUser?.id === comment.user.id;
+
+            return (
+              <div
+                key={comment.id}
+                className="bg-gray-50 rounded-lg p-3"
+              >
+
+                <div className="flex gap-3">
+
+                  {/* AVATAR */}
+
+                  {comment.user.avatar ? (
+                    <img
+                      src={`http://localhost:5000${comment.user.avatar}`}
+                      alt={comment.user.username}
+                      className="w-9 h-9 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center">
+                      👤
+                    </div>
+                  )}
+
+                  <div className="flex-1">
+
+                    <div className="flex justify-between">
+
+                      <div>
+                        <p className="font-semibold">
+                          {comment.user.firstName}{" "}
+                          {comment.user.lastName}
+                        </p>
+
+                        <p className="text-xs text-gray-500">
+                          @{comment.user.username}
+                        </p>
+                      </div>
+
+                      {isOwner && (
+                        <div className="flex gap-2 text-sm">
+
+                          <button
+                            onClick={() =>
+                              startEdit(comment)
+                            }
+                            className="text-blue-600"
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() =>
+                              handleDelete(comment.id)
+                            }
+                            className="text-red-600"
+                          >
+                            Hapus
+                          </button>
+
+                        </div>
+                      )}
+
+                    </div>
+
+                    {/* CONTENT */}
+
+                    {editingId === comment.id ? (
+                      <div className="mt-2">
+
+                        <textarea
+                          value={editContent}
+                          onChange={(e) =>
+                            setEditContent(
+                              e.target.value
+                            )
+                          }
+                          className="border rounded-lg w-full p-2"
+                          rows="2"
+                        />
+
+                        <div className="flex gap-2 mt-2">
+
+                          <button
+                            onClick={() =>
+                              handleUpdate(
+                                comment.id
+                              )
+                            }
+                            className="bg-blue-600 text-white px-3 py-1 rounded"
+                          >
+                            Simpan
+                          </button>
+
+                          <button
+                            onClick={cancelEdit}
+                            className="bg-gray-200 px-3 py-1 rounded"
+                          >
+                            Batal
+                          </button>
+
+                        </div>
+
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-gray-800 whitespace-pre-wrap">
+                        {comment.content}
+                      </p>
+                    )}
+
+                    <p className="text-xs text-gray-400 mt-2">
+                      {new Date(
+                        comment.createdAt
+                      ).toLocaleString()}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+            );
+          })}
+
+        </div>
+      )}
+
     </div>
-  )
+  );
 }
