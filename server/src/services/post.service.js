@@ -42,6 +42,11 @@ export async function getAllPosts(userId) {
           userId: true,
         },
       },
+      _count: {
+        select: {
+          comments: true,
+  },
+},
     },
   }).then((posts) =>
     posts.map((post) => ({
@@ -49,11 +54,14 @@ export async function getAllPosts(userId) {
 
       likesCount: post.likes.length,
 
+      commentsCount: post._count.comments,
+
       isLiked: post.likes.some(
         (like) => like.userId === userId
       ),
 
       likes: undefined,
+      _count: undefined,
     }))
   );
 }
