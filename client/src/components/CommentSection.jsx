@@ -125,4 +125,41 @@ export default function CommentSection({ postId }) {
     }
   }
 
+
+  return (
+    <div className="mt-4 border-t pt-4">
+
+      <h3 className="font-semibold mb-3">
+        Komentar
+      </h3>
+
+      {/* FORM KOMENTAR */}
+
+      <form
+        onSubmit={handleSubmit}
+        className="flex gap-2 mb-4"
+      >
+        <input
+          type="text"
+          value={content}
+          onChange={(e) =>
+            setContent(e.target.value)
+          }
+          placeholder="Tulis komentar..."
+          className="border rounded-lg px-3 py-2 flex-1"
+          disabled={submitting}
+        />
+
+        <button
+          type="submit"
+          disabled={
+            submitting || !content.trim()
+          }
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+        >
+          {submitting ? "..." : "Kirim"}
+        </button>
+      </form>
+    </div>
+  )
 }
