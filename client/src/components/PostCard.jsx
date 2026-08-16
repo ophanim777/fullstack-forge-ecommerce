@@ -153,9 +153,15 @@ export default function PostCard({ post, onDelete, onUpdate, }) {
             🗑️ Delete
             </button>
 
-        <span className="text-gray-500">
-          {likesCount} Likes
-        </span>
+        <div className="flex gap-4 text-gray-500">
+          <span>
+            {likesCount} Likes
+          </span>
+
+          <span>
+            💬 {commentsCount} Comments
+          </span>
+        </div>
       </div>
 
       <div className="mt-3 text-sm text-gray-400">
