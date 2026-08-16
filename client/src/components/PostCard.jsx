@@ -6,6 +6,9 @@ import CommentSection from "./CommentSection";
 export default function PostCard({ post, onDelete, onUpdate, }) {
   const [liked, setLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
+  const [commentsCount, setCommentsCount] = useState(
+  post.commentsCount || 0
+);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
 
