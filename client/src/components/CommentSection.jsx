@@ -266,6 +266,16 @@ export default function CommentSection({
                             Hapus
                           </button>
 
+                            <button
+                              onClick={() => {
+                                setReplyingTo(comment.id);
+                                setReplyContent("");
+                              }}
+                              className="text-blue-600 text-sm font-semibold"
+                            >
+                              Reply
+                            </button>
+
                         </div>
                       )}
 
