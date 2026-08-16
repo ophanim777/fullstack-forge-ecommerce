@@ -17,6 +17,7 @@ export async function createComment(postId, userId, data) {
       content: data.content,
       userId,
       postId,
+      parentId: data.parentId || null,
     },
     include: {
       user: {
