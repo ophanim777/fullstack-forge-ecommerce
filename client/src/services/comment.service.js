@@ -29,3 +29,11 @@ export async function updateComment(commentId, content) {
 
   return response.data;
 }
+
+export async function deleteComment(commentId) {
+  const response = await api.delete(
+    `/comments/${commentId}`
+  );
+
+  return response.data;
+}
