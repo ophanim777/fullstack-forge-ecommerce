@@ -215,8 +215,13 @@ export default function CommentSection({
 
                     <div className="flex justify-between">
 
-                      <div>
-                        <p className="font-semibold">
+                      <div
+                        className="cursor-pointer"
+                        onClick={() =>
+                          navigate(`/profile/${comment.user.username}`)
+                        }
+                      >
+                        <p className="font-semibold hover:text-blue-600">
                           {comment.user.firstName}{" "}
                           {comment.user.lastName}
                         </p>
