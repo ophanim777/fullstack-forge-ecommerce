@@ -47,6 +47,7 @@ export async function getComments(postId) {
   return await prisma.comment.findMany({
     where: {
       postId,
+      parentId: null,
     },
     orderBy: {
       createdAt: "asc",
@@ -61,10 +62,26 @@ export async function getComments(postId) {
           avatar: true,
         },
       },
+
+      replies: {
+        orderBy: {
+          createdAt: "asc",
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              username: true,
+              avatar: true,
+            },
+          },
+        },
+      },
     },
   });
 }
-
 export async function updateComment(commentId, userId, data) {
   const comment = await prisma.comment.findUnique({
     where: {
