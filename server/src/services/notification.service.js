@@ -35,3 +35,37 @@ export async function createNotification({
     },
   });
 }
+
+export async function getNotifications(userId) {
+  return await prisma.notification.findMany({
+    where: {
+      userId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      actor: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          username: true,
+          avatar: true,
+        },
+      },
+      post: {
+        select: {
+          id: true,
+          content: true,
+        },
+      },
+      comment: {
+        select: {
+          id: true,
+          content: true,
+        },
+      },
+    },
+  });
+}
