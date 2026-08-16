@@ -36,4 +36,34 @@ export default function CommentSection({ postId }) {
     loadComments();
   }, [postId]);
 
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!content.trim()) return;
+
+    try {
+      setSubmitting(true);
+
+      const response = await createComment(
+        postId,
+        content.trim()
+      );
+
+      setComments((prev) => [
+        ...prev,
+        response.comment,
+      ]);
+
+      setContent("");
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Gagal membuat komentar."
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
 }
