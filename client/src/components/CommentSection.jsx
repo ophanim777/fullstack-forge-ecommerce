@@ -15,6 +15,8 @@ export default function CommentSection({
   const { user: currentUser } = useAuth();
 
   const [comments, setComments] = useState([]);
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyContent, setReplyContent] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
