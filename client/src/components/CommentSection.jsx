@@ -203,7 +203,10 @@ export default function CommentSection({
                     <img
                       src={`http://localhost:5000${comment.user.avatar}`}
                       alt={comment.user.username}
-                      className="w-9 h-9 rounded-full object-cover"
+                      onClick={() =>
+                        navigate(`/profile/${comment.user.username}`)
+                      }
+                      className="w-9 h-9 rounded-full object-cover cursor-pointer"
                     />
                   ) : (
                     <div className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center">
