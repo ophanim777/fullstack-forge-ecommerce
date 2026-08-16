@@ -7,7 +7,9 @@ import {
 } from "../services/comment.service";
 import { useAuth } from "../context/AuthContext";
 
-export default function CommentSection({ postId }) {
+export default function CommentSection({ 
+  postId, onCommentCountChange, 
+}) {
   const { user: currentUser } = useAuth();
 
   const [comments, setComments] = useState([]);
