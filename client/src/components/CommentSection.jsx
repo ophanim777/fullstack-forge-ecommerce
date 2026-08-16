@@ -17,4 +17,23 @@ export default function CommentSection({ postId }) {
 
   const [editingId, setEditingId] = useState(null);
   const [editContent, setEditContent] = useState("");
+
+ async function loadComments() {
+    try {
+      setLoading(true);
+
+      const response = await getComments(postId);
+
+      setComments(response.comments);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadComments();
+  }, [postId]);
+
 }
