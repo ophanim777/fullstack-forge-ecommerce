@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getComments,
   createComment,
@@ -10,6 +11,7 @@ import { useAuth } from "../context/AuthContext";
 export default function CommentSection({ 
   postId, onCommentCountChange, 
 }) {
+  const navigate = useNavigate();
   const { user: currentUser } = useAuth();
 
   const [comments, setComments] = useState([]);
