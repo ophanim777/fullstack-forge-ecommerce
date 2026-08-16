@@ -18,3 +18,14 @@ export async function createComment(postId, content) {
 
   return response.data;
 }
+
+export async function updateComment(commentId, content) {
+  const response = await api.patch(
+    `/comments/${commentId}`,
+    {
+      content,
+    }
+  );
+
+  return response.data;
+}
