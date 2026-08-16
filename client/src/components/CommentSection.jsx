@@ -71,4 +71,9 @@ export default function CommentSection({ postId }) {
     setEditContent(comment.content);
   }
 
+  function cancelEdit() {
+    setEditingId(null);
+    setEditContent("");
+  }
+
 }
