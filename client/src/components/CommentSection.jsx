@@ -146,34 +146,48 @@ export default function CommentSection({
   }
 
   async function handleUpdate(commentId) {
-    if (!editContent.trim()) return;
+  if (!editContent.trim()) return;
 
-    try {
-      const response = await updateComment(
-        commentId,
-        editContent.trim()
-      );
+  try {
+    const response = await updateComment(
+      commentId,
+      editContent.trim()
+    );
 
-      setComments((prev) =>
-        prev.map((comment) =>
-          comment.id === commentId
-            ? {
-                ...comment,
-                ...response.comment,
-              }
-            : comment
-        )
-      );
+    setComments((prev) =>
+      prev.map((comment) => {
+        // Kalau komentar utama
+        if (comment.id === commentId) {
+          return {
+            ...comment,
+            ...response.comment,
+          };
+        }
 
-      cancelEdit();
-    } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          "Gagal mengupdate komentar."
-      );
-    }
+        // Kalau reply
+        return {
+          ...comment,
+          replies: (comment.replies || []).map(
+            (reply) =>
+              reply.id === commentId
+                ? {
+                    ...reply,
+                    ...response.comment,
+                  }
+                : reply
+          ),
+        };
+      })
+    );
+
+    cancelEdit();
+  } catch (error) {
+    alert(
+      error.response?.data?.message ||
+        "Gagal mengupdate komentar."
+    );
   }
-
+}
   // =========================
   // DELETE
   // =========================
