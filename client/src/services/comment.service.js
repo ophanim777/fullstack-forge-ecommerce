@@ -13,6 +13,7 @@ export async function createComment(postId, content) {
     `/posts/${postId}/comments`,
     {
       content,
+      parentId,
     }
   );
 
