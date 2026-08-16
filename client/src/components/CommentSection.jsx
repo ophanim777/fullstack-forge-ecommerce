@@ -1,30 +1,37 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
   getComments,
   createComment,
   updateComment,
   deleteComment,
 } from "../services/comment.service";
+
 import { useAuth } from "../context/AuthContext";
 
-export default function CommentSection({ 
-  postId, onCommentCountChange, 
+export default function CommentSection({
+  postId,
+  onCommentCountChange,
 }) {
   const navigate = useNavigate();
+
   const { user: currentUser } = useAuth();
 
   const [comments, setComments] = useState([]);
-  const [replyingTo, setReplyingTo] = useState(null);
-  const [replyContent, setReplyContent] = useState("");
+
   const [content, setContent] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
   const [editingId, setEditingId] = useState(null);
   const [editContent, setEditContent] = useState("");
 
- async function loadComments() {
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyContent, setReplyContent] = useState("");
+
+  async function loadComments() {
     try {
       setLoading(true);
 
@@ -42,22 +49,66 @@ export default function CommentSection({
     loadComments();
   }, [postId]);
 
+  // =========================
+  // CREATE COMMENT
+  // =========================
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!content.trim()) return;
+
+    try {
+      setSubmitting(true);
+
+      const response = await createComment(
+        postId,
+        content.trim()
+      );
+
+      setComments((prev) => [
+        ...prev,
+        {
+          ...response.comment,
+          replies: [],
+        },
+      ]);
+
+      setContent("");
+
+      onCommentCountChange?.(1);
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Gagal mengirim komentar."
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  // =========================
+  // REPLY
+  // =========================
 
   async function handleReplySubmit(e, parentId) {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!replyContent.trim()) return;
+    if (!replyContent.trim()) return;
 
-  try {
-    const response = await createComment(
-      postId,
-      replyContent,
-      parentId
-    );
+    try {
+      const response = await createComment(
+        postId,
+        replyContent.trim(),
+        parentId
+      );
 
-    setComments((prev) =>
-      prev.map((comment) => {
-        if (comment.id === parentId) {
+      setComments((prev) =>
+        prev.map((comment) => {
+          if (comment.id !== parentId) {
+            return comment;
+          }
+
           return {
             ...comment,
             replies: [
@@ -65,23 +116,24 @@ export default function CommentSection({
               response.comment,
             ],
           };
-        }
+        })
+      );
 
-        return comment;
-      })
-    );
+      setReplyContent("");
+      setReplyingTo(null);
 
-    setReplyContent("");
-    setReplyingTo(null);
-
-    onCommentCountChange?.(1);
-  } catch (error) {
-    alert(
-      error.response?.data?.message ||
-        "Gagal mengirim reply."
-    );
+      onCommentCountChange?.(1);
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Gagal mengirim reply."
+      );
+    }
   }
-}
+
+  // =========================
+  // EDIT
+  // =========================
 
   function startEdit(comment) {
     setEditingId(comment.id);
@@ -105,7 +157,10 @@ export default function CommentSection({
       setComments((prev) =>
         prev.map((comment) =>
           comment.id === commentId
-            ? response.comment
+            ? {
+                ...comment,
+                ...response.comment,
+              }
             : comment
         )
       );
@@ -118,6 +173,10 @@ export default function CommentSection({
       );
     }
   }
+
+  // =========================
+  // DELETE
+  // =========================
 
   async function handleDelete(commentId) {
     const confirmed = window.confirm(
@@ -136,7 +195,6 @@ export default function CommentSection({
       );
 
       onCommentCountChange?.(-1);
-
     } catch (error) {
       alert(
         error.response?.data?.message ||
@@ -145,6 +203,9 @@ export default function CommentSection({
     }
   }
 
+  // =========================
+  // RENDER
+  // =========================
 
   return (
     <div className="mt-4 border-t pt-4">
@@ -181,8 +242,7 @@ export default function CommentSection({
         </button>
       </form>
 
-
-          {/* DAFTAR KOMENTAR */}
+      {/* DAFTAR KOMENTAR */}
 
       {loading ? (
         <p className="text-gray-500 text-sm">
@@ -206,6 +266,8 @@ export default function CommentSection({
                 className="bg-gray-50 rounded-lg p-3"
               >
 
+                {/* COMMENT HEADER */}
+
                 <div className="flex gap-3">
 
                   {/* AVATAR */}
@@ -215,24 +277,37 @@ export default function CommentSection({
                       src={`http://localhost:5000${comment.user.avatar}`}
                       alt={comment.user.username}
                       onClick={() =>
-                        navigate(`/profile/${comment.user.username}`)
+                        navigate(
+                          `/profile/${comment.user.username}`
+                        )
                       }
                       className="w-9 h-9 rounded-full object-cover cursor-pointer"
                     />
                   ) : (
-                    <div className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center">
+                    <div
+                      onClick={() =>
+                        navigate(
+                          `/profile/${comment.user.username}`
+                        )
+                      }
+                      className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer"
+                    >
                       👤
                     </div>
                   )}
 
                   <div className="flex-1">
 
+                    {/* USER INFO + ACTION */}
+
                     <div className="flex justify-between">
 
                       <div
                         className="cursor-pointer"
                         onClick={() =>
-                          navigate(`/profile/${comment.user.username}`)
+                          navigate(
+                            `/profile/${comment.user.username}`
+                          )
                         }
                       >
                         <p className="font-semibold hover:text-blue-600">
@@ -245,9 +320,11 @@ export default function CommentSection({
                         </p>
                       </div>
 
-                      {isOwner && (
-                        <div className="flex gap-2 text-sm">
+                      <div className="flex gap-2 text-sm">
 
+                        {/* EDIT */}
+
+                        {isOwner && (
                           <button
                             onClick={() =>
                               startEdit(comment)
@@ -256,7 +333,11 @@ export default function CommentSection({
                           >
                             Edit
                           </button>
+                        )}
 
+                        {/* DELETE */}
+
+                        {isOwner && (
                           <button
                             onClick={() =>
                               handleDelete(comment.id)
@@ -265,19 +346,21 @@ export default function CommentSection({
                           >
                             Hapus
                           </button>
+                        )}
 
-                            <button
-                              onClick={() => {
-                                setReplyingTo(comment.id);
-                                setReplyContent("");
-                              }}
-                              className="text-blue-600 text-sm font-semibold"
-                            >
-                              Reply
-                            </button>
+                        {/* REPLY */}
 
-                        </div>
-                      )}
+                        <button
+                          onClick={() => {
+                            setReplyingTo(comment.id);
+                            setReplyContent("");
+                          }}
+                          className="text-blue-600 font-semibold"
+                        >
+                          Reply
+                        </button>
+
+                      </div>
 
                     </div>
 
@@ -300,6 +383,7 @@ export default function CommentSection({
                         <div className="flex gap-2 mt-2">
 
                           <button
+                            type="button"
                             onClick={() =>
                               handleUpdate(
                                 comment.id
@@ -311,6 +395,7 @@ export default function CommentSection({
                           </button>
 
                           <button
+                            type="button"
                             onClick={cancelEdit}
                             className="bg-gray-200 px-3 py-1 rounded"
                           >
@@ -326,11 +411,137 @@ export default function CommentSection({
                       </p>
                     )}
 
+                    {/* DATE */}
+
                     <p className="text-xs text-gray-400 mt-2">
                       {new Date(
                         comment.createdAt
                       ).toLocaleString()}
                     </p>
+
+                    {/* REPLY FORM */}
+
+                    {replyingTo === comment.id && (
+                      <form
+                        onSubmit={(e) =>
+                          handleReplySubmit(
+                            e,
+                            comment.id
+                          )
+                        }
+                        className="mt-3 flex gap-2"
+                      >
+                        <input
+                          type="text"
+                          value={replyContent}
+                          onChange={(e) =>
+                            setReplyContent(
+                              e.target.value
+                            )
+                          }
+                          placeholder="Tulis balasan..."
+                          className="border rounded-lg px-3 py-2 flex-1"
+                        />
+
+                        <button
+                          type="submit"
+                          disabled={!replyContent.trim()}
+                          className="bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+                        >
+                          Reply
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReplyingTo(null);
+                            setReplyContent("");
+                          }}
+                          className="bg-gray-200 px-4 py-2 rounded-lg"
+                        >
+                          Batal
+                        </button>
+                      </form>
+                    )}
+
+                    {/* REPLIES */}
+
+                    {comment.replies?.length > 0 && (
+                      <div className="ml-10 mt-3 space-y-3 border-l-2 pl-4">
+
+                        {comment.replies.map(
+                          (reply) => (
+                            <div
+                              key={reply.id}
+                              className="bg-white rounded-lg p-3"
+                            >
+
+                              <div className="flex gap-2">
+
+                                {reply.user.avatar ? (
+                                  <img
+                                    src={`http://localhost:5000${reply.user.avatar}`}
+                                    alt={
+                                      reply.user.username
+                                    }
+                                    onClick={() =>
+                                      navigate(
+                                        `/profile/${reply.user.username}`
+                                      )
+                                    }
+                                    className="w-8 h-8 rounded-full object-cover cursor-pointer"
+                                  />
+                                ) : (
+                                  <div
+                                    onClick={() =>
+                                      navigate(
+                                        `/profile/${reply.user.username}`
+                                      )
+                                    }
+                                    className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer"
+                                  >
+                                    👤
+                                  </div>
+                                )}
+
+                                <div className="flex-1">
+
+                                  <p
+                                    className="font-semibold text-sm cursor-pointer hover:text-blue-600"
+                                    onClick={() =>
+                                      navigate(
+                                        `/profile/${reply.user.username}`
+                                      )
+                                    }
+                                  >
+                                    {reply.user.firstName}{" "}
+                                    {reply.user.lastName}
+                                  </p>
+
+                                  <p className="text-xs text-gray-500">
+                                    @{reply.user.username}
+                                  </p>
+
+                                  <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">
+                                    {reply.content}
+                                  </p>
+
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    {new Date(
+                                      reply.createdAt
+                                    ).toLocaleString()}
+                                  </p>
+
+                                </div>
+
+                              </div>
+
+                            </div>
+                          )
+                        )}
+
+                      </div>
+                    )}
 
                   </div>
 
