@@ -57,6 +57,8 @@ export default function CommentSection({
         response.comment,
       ]);
 
+      onCommentCountChange?.(1);
+
       setContent("");
     } catch (error) {
       alert(
@@ -119,6 +121,9 @@ export default function CommentSection({
           (comment) => comment.id !== commentId
         )
       );
+
+      onCommentCountChange?.(-1);
+
     } catch (error) {
       alert(
         error.response?.data?.message ||
