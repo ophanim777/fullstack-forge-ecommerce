@@ -66,4 +66,9 @@ export default function CommentSection({ postId }) {
     }
   }
 
+  function startEdit(comment) {
+    setEditingId(comment.id);
+    setEditContent(comment.content);
+  }
+
 }
