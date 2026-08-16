@@ -102,4 +102,27 @@ export default function CommentSection({ postId }) {
     }
   }
 
+  async function handleDelete(commentId) {
+    const confirmed = window.confirm(
+      "Yakin ingin menghapus komentar ini?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await deleteComment(commentId);
+
+      setComments((prev) =>
+        prev.filter(
+          (comment) => comment.id !== commentId
+        )
+      );
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Gagal menghapus komentar."
+      );
+    }
+  }
+
 }
