@@ -76,4 +76,30 @@ export default function CommentSection({ postId }) {
     setEditContent("");
   }
 
+  async function handleUpdate(commentId) {
+    if (!editContent.trim()) return;
+
+    try {
+      const response = await updateComment(
+        commentId,
+        editContent.trim()
+      );
+
+      setComments((prev) =>
+        prev.map((comment) =>
+          comment.id === commentId
+            ? response.comment
+            : comment
+        )
+      );
+
+      cancelEdit();
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Gagal mengupdate komentar."
+      );
+    }
+  }
+
 }
