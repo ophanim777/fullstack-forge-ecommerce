@@ -8,7 +8,7 @@ export async function getComments(postId) {
   return response.data;
 }
 
-export async function createComment(postId, content) {
+export async function createComment(postId, content, parentId = null) {
   const response = await api.post(
     `/posts/${postId}/comments`,
     {
