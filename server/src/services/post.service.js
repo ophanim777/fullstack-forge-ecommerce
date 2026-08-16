@@ -1,5 +1,6 @@
 import { prisma } from "../config/prisma.js";
 import { ApiError } from "../utils/apiError.js";
+import { createNotification } from "./notification.service.js";
 
 export async function createPost(userId, data) {
   return await prisma.post.create({
@@ -191,6 +192,14 @@ export async function toggleLike(postId, userId) {
       userId,
       postId,
     },
+  });
+
+  await createNotification({
+    userId: post.authorId,
+    actorId: userId,
+    type: "LIKE",
+    message: "menyukai post kamu.",
+    postId,
   });
 
   return {
