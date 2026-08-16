@@ -469,21 +469,23 @@ export default function CommentSection({
                     {comment.replies?.length > 0 && (
                       <div className="ml-10 mt-3 space-y-3 border-l-2 pl-4">
 
-                        {comment.replies.map(
-                          (reply) => (
+                        {comment.replies.map((reply) => {
+                          const isReplyOwner =
+                            currentUser?.id === reply.user.id;
+
+                          return (
                             <div
                               key={reply.id}
                               className="bg-white rounded-lg p-3"
                             >
-
                               <div className="flex gap-2">
+
+                                {/* AVATAR */}
 
                                 {reply.user.avatar ? (
                                   <img
                                     src={`http://localhost:5000${reply.user.avatar}`}
-                                    alt={
-                                      reply.user.username
-                                    }
+                                    alt={reply.user.username}
                                     onClick={() =>
                                       navigate(
                                         `/profile/${reply.user.username}`
@@ -506,25 +508,100 @@ export default function CommentSection({
 
                                 <div className="flex-1">
 
-                                  <p
-                                    className="font-semibold text-sm cursor-pointer hover:text-blue-600"
-                                    onClick={() =>
-                                      navigate(
-                                        `/profile/${reply.user.username}`
-                                      )
-                                    }
-                                  >
-                                    {reply.user.firstName}{" "}
-                                    {reply.user.lastName}
-                                  </p>
+                                  {/* HEADER */}
 
-                                  <p className="text-xs text-gray-500">
-                                    @{reply.user.username}
-                                  </p>
+                                  <div className="flex justify-between">
 
-                                  <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">
-                                    {reply.content}
-                                  </p>
+                                    <div
+                                      className="cursor-pointer"
+                                      onClick={() =>
+                                        navigate(
+                                          `/profile/${reply.user.username}`
+                                        )
+                                      }
+                                    >
+                                      <p className="font-semibold text-sm hover:text-blue-600">
+                                        {reply.user.firstName}{" "}
+                                        {reply.user.lastName}
+                                      </p>
+
+                                      <p className="text-xs text-gray-500">
+                                        @{reply.user.username}
+                                      </p>
+                                    </div>
+
+                                    {/* ACTION */}
+
+                                    {isReplyOwner && (
+                                      <div className="flex gap-2 text-xs">
+
+                                        <button
+                                          onClick={() =>
+                                            startEdit(reply)
+                                          }
+                                          className="text-blue-600"
+                                        >
+                                          Edit
+                                        </button>
+
+                                        <button
+                                          onClick={() =>
+                                            handleDelete(reply.id)
+                                          }
+                                          className="text-red-600"
+                                        >
+                                          Hapus
+                                        </button>
+
+                                      </div>
+                                    )}
+
+                                  </div>
+
+                                  {/* CONTENT */}
+
+                                  {editingId === reply.id ? (
+                                    <div className="mt-2">
+
+                                      <textarea
+                                        value={editContent}
+                                        onChange={(e) =>
+                                          setEditContent(e.target.value)
+                                        }
+                                        className="border rounded-lg w-full p-2"
+                                        rows="2"
+                                      />
+
+                                      <div className="flex gap-2 mt-2">
+
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            handleUpdate(reply.id)
+                                          }
+                                          className="bg-blue-600 text-white px-3 py-1 rounded"
+                                        >
+                                          Simpan
+                                        </button>
+
+                                        <button
+                                          type="button"
+                                          onClick={cancelEdit}
+                                          className="bg-gray-200 px-3 py-1 rounded"
+                                        >
+                                          Batal
+                                        </button>
+
+                                      </div>
+
+                                    </div>
+                                  ) : (
+                                    <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">
+                                      {reply.content}
+                                    </p>
+                                  )}
+
+                                  {/* DATE */}
 
                                   <p className="text-xs text-gray-400 mt-1">
                                     {new Date(
@@ -533,12 +610,10 @@ export default function CommentSection({
                                   </p>
 
                                 </div>
-
                               </div>
-
                             </div>
-                          )
-                        )}
+                          );
+                        })}
 
                       </div>
                     )}
