@@ -43,36 +43,45 @@ export default function CommentSection({
   }, [postId]);
 
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleReplySubmit(e, parentId) {
+  e.preventDefault();
 
-    if (!content.trim()) return;
+  if (!replyContent.trim()) return;
 
-    try {
-      setSubmitting(true);
+  try {
+    const response = await createComment(
+      postId,
+      replyContent,
+      parentId
+    );
 
-      const response = await createComment(
-        postId,
-        content.trim()
-      );
+    setComments((prev) =>
+      prev.map((comment) => {
+        if (comment.id === parentId) {
+          return {
+            ...comment,
+            replies: [
+              ...(comment.replies || []),
+              response.comment,
+            ],
+          };
+        }
 
-      setComments((prev) => [
-        ...prev,
-        response.comment,
-      ]);
+        return comment;
+      })
+    );
 
-      onCommentCountChange?.(1);
+    setReplyContent("");
+    setReplyingTo(null);
 
-      setContent("");
-    } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          "Gagal membuat komentar."
-      );
-    } finally {
-      setSubmitting(false);
-    }
+    onCommentCountChange?.(1);
+  } catch (error) {
+    alert(
+      error.response?.data?.message ||
+        "Gagal mengirim reply."
+    );
   }
+}
 
   function startEdit(comment) {
     setEditingId(comment.id);
