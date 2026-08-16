@@ -1,5 +1,6 @@
 import * as postService from "../services/post.service";
 import { useState } from "react";
+import CommentSection from "./CommentSection";
 
 
 export default function PostCard({ post, onDelete, onUpdate, }) {
@@ -157,6 +158,8 @@ export default function PostCard({ post, onDelete, onUpdate, }) {
       <div className="mt-3 text-sm text-gray-400">
         {new Date(post.createdAt).toLocaleString()}
       </div>
+
+      <CommentSection postId={post.id} />
     </div>
   );
 }
