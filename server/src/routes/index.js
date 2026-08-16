@@ -7,6 +7,7 @@ import postRoutes from "./post.routes.js";
 import commentRoutes from "./comment.routes.js";
 import followRoutes from "./follow.routes.js";
 import feedRoutes from "./feed.routes.js";
+import notificationRoutes from "./notification.routes.js";
 
 
 const router = Router();
@@ -18,5 +19,6 @@ router.use("/posts", postRoutes);
 router.use(commentRoutes);
 router.use(followRoutes);
 router.use(feedRoutes);
+router.use(notificationRoutes);
 
 export default router;
