@@ -37,7 +37,7 @@ model User {
   followers Follow[] @relation("UserFollowing")
   following Follow[] @relation("UserFollowers")
 
-  notifications Notification[]
+  notifications Notification[] @relation("NotificationRecipient")
 
   notificationsSent Notification[] @relation("NotificationActor")
 
@@ -136,11 +136,12 @@ model Notification {
 
   createdAt DateTime @default(now())
 
-  user      User @relation(
-    fields: [userId],
-    references: [id],
-    onDelete: Cascade
-  )
+  user User @relation(
+  "NotificationRecipient",
+  fields: [userId],
+  references: [id],
+  onDelete: Cascade
+)
 
   actor     User @relation(
     "NotificationActor",
