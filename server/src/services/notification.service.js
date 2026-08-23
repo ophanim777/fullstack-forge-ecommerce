@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma.js";
+import { ApiError } from "../utils/apiError.js";
 
 export async function createNotification({
   userId,
