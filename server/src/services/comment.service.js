@@ -1,5 +1,6 @@
 import { prisma } from "../config/prisma.js";
 import { ApiError } from "../utils/apiError.js";
+import { createNotification } from "./notification.service.js";
 
 export async function createComment(postId, userId, data) {
   const post = await prisma.post.findUnique({
@@ -12,7 +13,34 @@ export async function createComment(postId, userId, data) {
     throw new ApiError(404, "Post tidak ditemukan.");
   }
 
-  return await prisma.comment.create({
+  // Kalau ini adalah reply, cari komentar induknya
+  let parentComment = null;
+
+  if (data.parentId) {
+    parentComment = await prisma.comment.findUnique({
+      where: {
+        id: data.parentId,
+      },
+    });
+
+    if (!parentComment) {
+      throw new ApiError(
+        404,
+        "Komentar yang ingin dibalas tidak ditemukan."
+      );
+    }
+
+    // Pastikan komentar induk berasal dari post yang sama
+    if (parentComment.postId !== postId) {
+      throw new ApiError(
+        400,
+        "Komentar tidak berasal dari post ini."
+      );
+    }
+  }
+
+  // Buat komentar
+  const comment = await prisma.comment.create({
     data: {
       content: data.content,
       userId,
@@ -31,6 +59,34 @@ export async function createComment(postId, userId, data) {
       },
     },
   });
+
+  // =========================
+  // NOTIFICATION
+  // =========================
+
+  if (parentComment) {
+    // REPLY
+    await createNotification({
+      userId: parentComment.userId,
+      actorId: userId,
+      type: "REPLY",
+      message: "membalas komentar kamu.",
+      postId,
+      commentId: comment.id,
+    });
+  } else {
+    // COMMENT
+    await createNotification({
+      userId: post.authorId,
+      actorId: userId,
+      type: "COMMENT",
+      message: "mengomentari post kamu.",
+      postId,
+      commentId: comment.id,
+    });
+  }
+
+  return comment;
 }
 
 export async function getComments(postId) {
@@ -82,6 +138,7 @@ export async function getComments(postId) {
     },
   });
 }
+
 export async function updateComment(commentId, userId, data) {
   const comment = await prisma.comment.findUnique({
     where: {
