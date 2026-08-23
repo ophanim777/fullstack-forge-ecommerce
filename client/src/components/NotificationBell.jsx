@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { getNotifications } from "../api/notification.api";
+import {
+  getNotifications,
+  markNotificationAsRead,
+} from "../api/notification.api";
 
 function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
@@ -22,6 +25,29 @@ function NotificationBell() {
     (notification) => !notification.isRead
   ).length;
 
+  async function handleNotificationClick(notification) {
+    if (notification.isRead) {
+      return;
+    }
+
+    try {
+      await markNotificationAsRead(notification.id);
+
+      setNotifications((currentNotifications) =>
+        currentNotifications.map((item) =>
+          item.id === notification.id
+            ? { ...item, isRead: true }
+            : item
+        )
+      );
+    } catch (error) {
+      console.error(
+        "Gagal menandai notifikasi sebagai sudah dibaca:",
+        error
+      );
+    }
+  }
+
   return (
     <div className="notification-bell">
       <button
@@ -29,6 +55,7 @@ function NotificationBell() {
         onClick={() => setIsOpen(!isOpen)}
       >
         🔔
+
         {unreadCount > 0 && (
           <span className="notification-count">
             {unreadCount}
@@ -46,7 +73,14 @@ function NotificationBell() {
             notifications.map((notification) => (
               <div
                 key={notification.id}
-                className="notification-item"
+                onClick={() =>
+                  handleNotificationClick(notification)
+                }
+                className={`notification-item ${
+                  !notification.isRead
+                    ? "unread"
+                    : ""
+                }`}
               >
                 <strong>
                   {notification.actor.firstName}{" "}
