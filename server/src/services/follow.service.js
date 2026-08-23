@@ -1,5 +1,6 @@
 import { prisma } from "../config/prisma.js";
 import { ApiError } from "../utils/apiError.js";
+import { createNotification } from "./notification.service.js";
 
 export async function toggleFollow(targetUserId, currentUserId) {
   if (targetUserId === currentUserId) {
