@@ -69,3 +69,37 @@ export async function getNotifications(userId) {
     },
   });
 }
+
+export async function markNotificationAsRead(
+  notificationId,
+  userId
+) {
+  const notification = await prisma.notification.findUnique({
+    where: {
+      id: notificationId,
+    },
+  });
+
+  if (!notification) {
+    throw new ApiError(
+      404,
+      "Notifikasi tidak ditemukan."
+    );
+  }
+
+  if (notification.userId !== userId) {
+    throw new ApiError(
+      403,
+      "Kamu tidak memiliki akses."
+    );
+  }
+
+  return await prisma.notification.update({
+    where: {
+      id: notificationId,
+    },
+    data: {
+      isRead: true,
+    },
+  });
+}
