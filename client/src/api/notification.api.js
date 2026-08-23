@@ -5,3 +5,11 @@ export async function getNotifications() {
 
   return response.data;
 }
+
+export async function markNotificationAsRead(notificationId) {
+  const response = await api.patch(
+    `/notifications/${notificationId}/read`
+  );
+
+  return response.data;
+}
