@@ -48,6 +48,13 @@ export async function toggleFollow(targetUserId, currentUserId) {
     },
   });
 
+  await createNotification({
+    userId: targetUserId,
+    actorId: currentUserId,
+    type: "FOLLOW",
+    message: "mulai mengikuti kamu.",
+  });
+
   return {
     following: true,
   };
