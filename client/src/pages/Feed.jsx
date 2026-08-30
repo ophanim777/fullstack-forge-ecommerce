@@ -10,17 +10,22 @@ export default function Feed() {
 
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(true);
+
   const [loading, setLoading] = useState(false);
 
   const observerRef = useRef(null);
 
-  async function loadFeed(pageNumber) {
+  const LIMIT = 10;
+
+  async function loadPosts(pageNumber) {
+    if (loading || !hasNextPage) return;
+
     try {
       setLoading(true);
 
       const response = await postService.getFeed(
         pageNumber,
-        10
+        LIMIT
       );
 
       setPosts((prevPosts) => [
@@ -29,24 +34,61 @@ export default function Feed() {
       ]);
 
       setHasNextPage(response.hasNextPage);
+      setPage(pageNumber);
     } catch (error) {
-      console.error("Gagal mengambil feed:", error);
+      console.error(
+        "Gagal mengambil feed:",
+        error
+      );
     } finally {
       setLoading(false);
     }
   }
 
+  // Load halaman pertama
   useEffect(() => {
-    loadFeed(1);
+    loadPosts(1);
   }, []);
 
+  // Infinite scroll
+  useEffect(() => {
+    if (!hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          !loading
+        ) {
+          loadPosts(page + 1);
+        }
+      },
+      {
+        threshold: 1,
+      }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [page, loading, hasNextPage]);
+
   function handlePostCreated(post) {
-    setPosts((prevPosts) => [post, ...prevPosts]);
+    setPosts((prevPosts) => [
+      post,
+      ...prevPosts,
+    ]);
   }
 
   function handleDeletePost(postId) {
     setPosts((prevPosts) =>
-      prevPosts.filter((post) => post.id !== postId)
+      prevPosts.filter(
+        (post) => post.id !== postId
+      )
     );
   }
 
@@ -59,43 +101,6 @@ export default function Feed() {
       )
     );
   }
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const firstEntry = entries[0];
-
-        if (
-          firstEntry.isIntersecting &&
-          !loading &&
-          hasNextPage
-        ) {
-          setPage((currentPage) => {
-            const nextPage = currentPage + 1;
-
-            loadFeed(nextPage);
-
-            return nextPage;
-          });
-        }
-      },
-      {
-        threshold: 0.1,
-      }
-    );
-
-    const currentObserverRef = observerRef.current;
-
-    if (currentObserverRef) {
-      observer.observe(currentObserverRef);
-    }
-
-    return () => {
-      if (currentObserverRef) {
-        observer.unobserve(currentObserverRef);
-      }
-    };
-  }, [loading, hasNextPage]);
 
   return (
     <MainLayout>
@@ -118,9 +123,10 @@ export default function Feed() {
         ))}
       </div>
 
+      {/* Infinite scroll trigger */}
       <div
         ref={observerRef}
-        className="flex justify-center py-6"
+        className="py-8 text-center"
       >
         {loading && (
           <p className="text-gray-500">
@@ -128,8 +134,8 @@ export default function Feed() {
           </p>
         )}
 
-        {!loading && !hasNextPage && (
-          <p className="text-gray-500">
+        {!loading && !hasNextPage && posts.length > 0 && (
+          <p className="text-gray-400">
             Tidak ada post lagi.
           </p>
         )}
