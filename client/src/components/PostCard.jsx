@@ -1,6 +1,7 @@
 import * as postService from "../services/post.service";
 import { useState } from "react";
 import CommentSection from "./CommentSection";
+import { Link } from "react-router-dom";
 
 
 export default function PostCard({ post, onDelete, onUpdate, }) {
@@ -75,20 +76,25 @@ export default function PostCard({ post, onDelete, onUpdate, }) {
   return (
     <div className="bg-white rounded-xl shadow p-5 mb-4">
       <div className="flex items-center gap-3 mb-4">
-        <img
-          src={
-            post.author.avatar
-              ? `http://localhost:5000${post.author.avatar}`
-              : "https://via.placeholder.com/48"
-          }
-          alt={post.author.username}
-          className="w-12 h-12 rounded-full object-cover"
-        />
+        <Link to={`/profile/${post.author.username}`}>
+          <img
+            src={
+              post.author.avatar
+                ? `http://localhost:5000${post.author.avatar}`
+                : "https://via.placeholder.com/48"
+            }
+            alt={post.author.username}
+            className="w-12 h-12 rounded-full object-cover hover:opacity-80"
+          />
+        </Link>
 
         <div>
-          <h2 className="font-bold">
+          <Link
+            to={`/profile/${post.author.username}`}
+            className="font-bold hover:text-blue-600"
+          >
             {post.author.firstName} {post.author.lastName}
-          </h2>
+          </Link>
 
           <p className="text-gray-500 text-sm">
             @{post.author.username}
