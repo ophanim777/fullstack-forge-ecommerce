@@ -2,9 +2,10 @@ import * as postService from "../services/post.service";
 import { useState } from "react";
 import CommentSection from "./CommentSection";
 import { Link } from "react-router-dom";
-
+import { useAuth } from "../context/AuthContext";
 
 export default function PostCard({ post, onDelete, onUpdate, }) {
+  const { user } = useAuth();
   const [liked, setLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
   const [commentsCount, setCommentsCount] = useState(
@@ -145,12 +146,23 @@ export default function PostCard({ post, onDelete, onUpdate, }) {
           {liked ? "❤️ Unlike" : "🤍 Like"}
         </button>
 
+       {user?.id === post.author.id && (
+  <>
         <button
-        onClick={() => setEditing(true)}
-        className="text-blue-600 font-semibold"
+          onClick={() => setEditing(true)}
+          className="text-blue-600 font-semibold"
         >
-        ✏️ Edit
-        </button> 
+          ✏️ Edit
+        </button>
+
+        <button
+          onClick={handleDelete}
+          className="text-gray-600 font-semibold"
+        >
+          🗑️ Delete
+        </button>
+      </>
+    )} 
 
         <button
             onClick={handleDelete}
