@@ -11,6 +11,7 @@ export default function PostCard({ post, onDelete, onUpdate, }) {
   const [commentsCount, setCommentsCount] = useState(
   post.commentsCount || 0
 );
+  const [showComments, setShowComments] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
 
@@ -164,14 +165,7 @@ export default function PostCard({ post, onDelete, onUpdate, }) {
           </button>
 
           <button
-            onClick={() => {
-              document
-                .getElementById(`comments-${post.id}`)
-                ?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "center",
-                });
-            }}
+            onClick={() => setShowComments((prev) => !prev)}
             className="flex-1 py-2 rounded-lg text-gray-600 font-semibold hover:text-blue-600 hover:bg-gray-100"
           >
             💬 Comment
@@ -202,17 +196,16 @@ export default function PostCard({ post, onDelete, onUpdate, }) {
         {new Date(post.createdAt).toLocaleString()}
       </div>
 
-      <div
-        id={`comments-${post.id}`}
-        className="mt-3"
-      >
-        <CommentSection
-          postId={post.id}
-          onCommentCountChange={(change) => {
-            setCommentsCount((prev) => prev + change);
-          }}
-        />
-      </div>
+      {showComments && (
+        <div className="mt-3">
+          <CommentSection
+            postId={post.id}
+            onCommentCountChange={(change) => {
+              setCommentsCount((prev) => prev + change);
+            }}
+          />
+        </div>
+      )}
 
     </div>
   );
