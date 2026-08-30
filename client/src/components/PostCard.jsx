@@ -138,49 +138,65 @@ export default function PostCard({ post, onDelete, onUpdate, }) {
         </p>
       )}
 
-      <div className="flex justify-between items-center">
-        <button
-          onClick={handleLike}
-          className="text-red-500 font-semibold"
-        >
-          {liked ? "❤️ Unlike" : "🤍 Like"}
-        </button>
-
-       {user?.id === post.author.id && (
-  <>
-        <button
-          onClick={() => setEditing(true)}
-          className="text-blue-600 font-semibold"
-        >
-          ✏️ Edit
-        </button>
-
-        <button
-          onClick={handleDelete}
-          className="text-gray-600 font-semibold"
-        >
-          🗑️ Delete
-        </button>
-      </>
-    )} 
-
-        <button
-            onClick={handleDelete}
-            className="text-gray-600 font-semibold"
-            >
-            🗑️ Delete
-            </button>
-
-        <div className="flex gap-4 text-gray-500">
+      <div className="border-t border-b py-3 mt-4">
+        
+        <div className="flex justify-between text-sm text-gray-500 mb-3">
           <span>
-            {likesCount} Likes
+            ❤️ {likesCount} Likes
           </span>
 
           <span>
             💬 {commentsCount} Comments
           </span>
         </div>
+
+        
+        <div className="flex items-center justify-around border-t pt-2">
+          <button
+            onClick={handleLike}
+            className={`flex-1 py-2 rounded-lg font-semibold ${
+              liked
+                ? "text-red-500"
+                : "text-gray-600 hover:text-red-500 hover:bg-gray-100"
+            }`}
+          >
+            {liked ? "❤️ Liked" : "♡ Like"}
+          </button>
+
+          <button
+            onClick={() => {
+              document
+                .getElementById(`comments-${post.id}`)
+                ?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+            }}
+            className="flex-1 py-2 rounded-lg text-gray-600 font-semibold hover:text-blue-600 hover:bg-gray-100"
+          >
+            💬 Comment
+          </button>
+
+          {user?.id === post.author.id && (
+            <>
+              <button
+                onClick={() => setEditing(true)}
+                className="flex-1 py-2 rounded-lg text-gray-600 font-semibold hover:text-blue-600 hover:bg-gray-100"
+              >
+                ✏️ Edit
+              </button>
+
+              <button
+                onClick={handleDelete}
+                className="flex-1 py-2 rounded-lg text-gray-600 font-semibold hover:text-red-500 hover:bg-gray-100"
+              >
+                🗑️ Delete
+              </button>
+            </>
+          )}
+        </div>
       </div>
+
 
       <div className="mt-3 text-sm text-gray-400">
         {new Date(post.createdAt).toLocaleString()}
