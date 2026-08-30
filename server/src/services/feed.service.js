@@ -1,10 +1,8 @@
 import { prisma } from "../config/prisma.js";
 
 export async function getFeed(userId, page = 1, limit = 10) {
-
   const skip = (page - 1) * limit;
 
-  // Ambil semua user yang sedang diikuti
   const following = await prisma.follow.findMany({
     where: {
       followerId: userId,
@@ -14,26 +12,25 @@ export async function getFeed(userId, page = 1, limit = 10) {
     },
   });
 
-  const followingIds = following.map(item => item.followingId);
+  const followingIds = [
+    ...following.map((item) => item.followingId),
+    userId,
+  ];
 
-  // Sertakan post milik sendiri
-  followingIds.push(userId);
-
-  const total = await prisma.post.count({
-  where: {
+  // Kondisi post yang masuk feed
+  const where = {
     authorId: {
       in: followingIds,
     },
-  },
-});
+  };
 
-  // Ambil semua post
+  const total = await prisma.post.count({
+    where,
+  });
+
   const posts = await prisma.post.findMany({
-    where: {
-      authorId: {
-        in: followingIds,
-      },
-    },
+    where,
+
     include: {
       author: {
         select: {
@@ -44,30 +41,55 @@ export async function getFeed(userId, page = 1, limit = 10) {
           avatar: true,
         },
       },
-      likes: true,
-      comments: true,
+
+      likes: {
+        where: {
+          userId,
+        },
+        select: {
+          userId: true,
+        },
+      },
+
+      _count: {
+        select: {
+          likes: true,
+          comments: true,
+        },
+      },
     },
+
     orderBy: {
       createdAt: "desc",
     },
+
     skip,
     take: limit,
   });
 
-  return  {
-  total,
-  posts: posts.map(post => ({
-    id: post.id,
-    content: post.content,
-    image: post.image,
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-    author: post.author,
-    likesCount: post.likes.length,
-    commentsCount: post.comments.length,
-    isLiked: post.likes.some(
-      like => like.userId === userId
-    ),
-  })),
-};
-};
+  return {
+    total,
+
+    page,
+
+    limit,
+
+    totalPages: Math.ceil(total / limit),
+
+    posts: posts.map((post) => ({
+      id: post.id,
+      content: post.content,
+      image: post.image,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+
+      author: post.author,
+
+      likesCount: post._count.likes,
+
+      commentsCount: post._count.comments,
+
+      isLiked: post.likes.length > 0,
+    })),
+  };
+}
