@@ -15,13 +15,15 @@ export default function CommentSection({
   onCommentCountChange,
 }) {
   const navigate = useNavigate();
-
   const { user: currentUser } = useAuth();
 
   const [comments, setComments] = useState([]);
 
-  const [content, setContent] = useState("");
+  // UI STATE
 
+  const [showComments, setShowComments] = useState(false);
+
+  const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -30,6 +32,8 @@ export default function CommentSection({
 
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyContent, setReplyContent] = useState("");
+
+  // LOAD COMMENTS
 
   async function loadComments() {
     try {
@@ -49,9 +53,7 @@ export default function CommentSection({
     loadComments();
   }, [postId]);
 
-  // =========================
   // CREATE COMMENT
-  // =========================
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -87,9 +89,7 @@ export default function CommentSection({
     }
   }
 
-  // =========================
   // REPLY
-  // =========================
 
   async function handleReplySubmit(e, parentId) {
     e.preventDefault();
@@ -131,13 +131,12 @@ export default function CommentSection({
     }
   }
 
-  // =========================
   // EDIT
-  // =========================
 
   function startEdit(comment) {
     setEditingId(comment.id);
     setEditContent(comment.content);
+    setReplyingTo(null);
   }
 
   function cancelEdit() {
@@ -146,512 +145,559 @@ export default function CommentSection({
   }
 
   async function handleUpdate(commentId) {
-  if (!editContent.trim()) return;
+    if (!editContent.trim()) return;
 
-  try {
-    const response = await updateComment(
-      commentId,
-      editContent.trim()
-    );
+    try {
+      const response = await updateComment(
+        commentId,
+        editContent.trim()
+      );
 
-    setComments((prev) =>
-      prev.map((comment) => {
-        // Kalau komentar utama
-        if (comment.id === commentId) {
+      setComments((prev) =>
+        prev.map((comment) => {
+          if (comment.id === commentId) {
+            return {
+              ...comment,
+              ...response.comment,
+            };
+          }
+
           return {
             ...comment,
-            ...response.comment,
+            replies: (comment.replies || []).map(
+              (reply) =>
+                reply.id === commentId
+                  ? {
+                      ...reply,
+                      ...response.comment,
+                    }
+                  : reply
+            ),
           };
-        }
+        })
+      );
 
-        // Kalau reply
-        return {
-          ...comment,
-          replies: (comment.replies || []).map(
-            (reply) =>
-              reply.id === commentId
-                ? {
-                    ...reply,
-                    ...response.comment,
-                  }
-                : reply
-          ),
-        };
-      })
-    );
-
-    cancelEdit();
-  } catch (error) {
-    alert(
-      error.response?.data?.message ||
-        "Gagal mengupdate komentar."
-    );
+      cancelEdit();
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Gagal mengupdate komentar."
+      );
+    }
   }
-}
-  // =========================
+
   // DELETE
-  // =========================
 
   async function handleDelete(commentId) {
-  const confirmed = window.confirm(
-    "Yakin ingin menghapus komentar ini?"
-  );
-
-  if (!confirmed) return;
-
-  try {
-    await deleteComment(commentId);
-
-    setComments((prev) =>
-      prev
-        // Hapus komentar utama
-        .filter(
-          (comment) => comment.id !== commentId
-        )
-        // Hapus reply
-        .map((comment) => ({
-          ...comment,
-          replies: (comment.replies || []).filter(
-            (reply) => reply.id !== commentId
-          ),
-        }))
+    const confirmed = window.confirm(
+      "Yakin ingin menghapus komentar ini?"
     );
 
-    onCommentCountChange?.(-1);
-  } catch (error) {
-    alert(
-      error.response?.data?.message ||
-        "Gagal menghapus komentar."
-    );
+    if (!confirmed) return;
+
+    try {
+      await deleteComment(commentId);
+
+      setComments((prev) =>
+        prev
+          .filter(
+            (comment) => comment.id !== commentId
+          )
+          .map((comment) => ({
+            ...comment,
+            replies: (comment.replies || []).filter(
+              (reply) => reply.id !== commentId
+            ),
+          }))
+      );
+
+      onCommentCountChange?.(-1);
+
+      if (editingId === commentId) {
+        cancelEdit();
+      }
+
+      if (replyingTo === commentId) {
+        setReplyingTo(null);
+        setReplyContent("");
+      }
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Gagal menghapus komentar."
+      );
+    }
   }
-}
 
-  // =========================
+  // TOGGLE COMMENTS
+
+  function toggleComments() {
+    setShowComments((prev) => !prev);
+
+    if (showComments) {
+      setReplyingTo(null);
+      setReplyContent("");
+    }
+  }
+
   // RENDER
-  // =========================
 
   return (
     <div className="mt-4 border-t pt-4">
 
-      <h3 className="font-semibold mb-3">
-        Komentar
-      </h3>
+      {/* COMMENT TOGGLE */}
 
-      {/* FORM KOMENTAR */}
-
-      <form
-        onSubmit={handleSubmit}
-        className="flex gap-2 mb-4"
+      <button
+        type="button"
+        onClick={toggleComments}
+        className="text-gray-600 hover:text-blue-600 font-medium text-sm"
       >
-        <input
-          type="text"
-          value={content}
-          onChange={(e) =>
-            setContent(e.target.value)
-          }
-          placeholder="Tulis komentar..."
-          className="border rounded-lg px-3 py-2 flex-1"
-          disabled={submitting}
-        />
+        💬{" "}
+        {comments.length === 0
+          ? "Komentar"
+          : `${comments.length} Komentar`}
+      </button>
 
-        <button
-          type="submit"
-          disabled={
-            submitting || !content.trim()
-          }
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
-        >
-          {submitting ? "..." : "Kirim"}
-        </button>
-      </form>
+      {/* COMMENT SECTION */}
 
-      {/* DAFTAR KOMENTAR */}
+      {showComments && (
+        <div className="mt-4">
 
-      {loading ? (
-        <p className="text-gray-500 text-sm">
-          Memuat komentar...
-        </p>
-      ) : comments.length === 0 ? (
-        <p className="text-gray-500 text-sm">
-          Belum ada komentar.
-        </p>
-      ) : (
-        <div className="space-y-3">
+          {/* CREATE COMMENT */}
 
-          {comments.map((comment) => {
+          <form
+            onSubmit={handleSubmit}
+            className="flex gap-2 mb-5"
+          >
+            <input
+              type="text"
+              value={content}
+              onChange={(e) =>
+                setContent(e.target.value)
+              }
+              placeholder="Tulis komentar..."
+              className="border rounded-full px-4 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={submitting}
+            />
 
-            const isOwner =
-              currentUser?.id === comment.user.id;
+            <button
+              type="submit"
+              disabled={
+                submitting || !content.trim()
+              }
+              className="bg-blue-600 text-white px-4 py-2 rounded-full disabled:opacity-50"
+            >
+              {submitting ? "..." : "Kirim"}
+            </button>
+          </form>
 
-            return (
-              <div
-                key={comment.id}
-                className="bg-gray-50 rounded-lg p-3"
-              >
+          {/* COMMENTS */}
 
-                {/* COMMENT HEADER */}
+          {loading ? (
+            <p className="text-gray-500 text-sm">
+              Memuat komentar...
+            </p>
+          ) : comments.length === 0 ? (
+            <p className="text-gray-500 text-sm">
+              Belum ada komentar.
+            </p>
+          ) : (
+            <div className="space-y-3">
 
-                <div className="flex gap-3">
+              {comments.map((comment) => {
+                const isOwner =
+                  currentUser?.id === comment.user.id;
 
-                  {/* AVATAR */}
+                return (
+                  <div
+                    key={comment.id}
+                    className="bg-gray-50 rounded-lg p-3"
+                  >
+                    <div className="flex gap-3">
 
-                  {comment.user.avatar ? (
-                    <img
-                      src={`http://localhost:5000${comment.user.avatar}`}
-                      alt={comment.user.username}
-                      onClick={() =>
-                        navigate(
-                          `/profile/${comment.user.username}`
-                        )
-                      }
-                      className="w-9 h-9 rounded-full object-cover cursor-pointer"
-                    />
-                  ) : (
-                    <div
-                      onClick={() =>
-                        navigate(
-                          `/profile/${comment.user.username}`
-                        )
-                      }
-                      className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer"
-                    >
-                      👤
-                    </div>
-                  )}
+                      {/* AVATAR */}
 
-                  <div className="flex-1">
-
-                    {/* USER INFO + ACTION */}
-
-                    <div className="flex justify-between">
-
-                      <div
-                        className="cursor-pointer"
-                        onClick={() =>
-                          navigate(
-                            `/profile/${comment.user.username}`
-                          )
-                        }
-                      >
-                        <p className="font-semibold hover:text-blue-600">
-                          {comment.user.firstName}{" "}
-                          {comment.user.lastName}
-                        </p>
-
-                        <p className="text-xs text-gray-500">
-                          @{comment.user.username}
-                        </p>
-                      </div>
-
-                      <div className="flex gap-2 text-sm">
-
-                        {/* EDIT */}
-
-                        {isOwner && (
-                          <button
-                            onClick={() =>
-                              startEdit(comment)
-                            }
-                            className="text-blue-600"
-                          >
-                            Edit
-                          </button>
-                        )}
-
-                        {/* DELETE */}
-
-                        {isOwner && (
-                          <button
-                            onClick={() =>
-                              handleDelete(comment.id)
-                            }
-                            className="text-red-600"
-                          >
-                            Hapus
-                          </button>
-                        )}
-
-                        {/* REPLY */}
-
-                        <button
-                          onClick={() => {
-                            setReplyingTo(comment.id);
-                            setReplyContent("");
-                          }}
-                          className="text-blue-600 font-semibold"
-                        >
-                          Reply
-                        </button>
-
-                      </div>
-
-                    </div>
-
-                    {/* CONTENT */}
-
-                    {editingId === comment.id ? (
-                      <div className="mt-2">
-
-                        <textarea
-                          value={editContent}
-                          onChange={(e) =>
-                            setEditContent(
-                              e.target.value
+                      {comment.user.avatar ? (
+                        <img
+                          src={`http://localhost:5000${comment.user.avatar}`}
+                          alt={comment.user.username}
+                          onClick={() =>
+                            navigate(
+                              `/profile/${comment.user.username}`
                             )
                           }
-                          className="border rounded-lg w-full p-2"
-                          rows="2"
+                          className="w-9 h-9 rounded-full object-cover cursor-pointer"
                         />
+                      ) : (
+                        <div
+                          onClick={() =>
+                            navigate(
+                              `/profile/${comment.user.username}`
+                            )
+                          }
+                          className="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer"
+                        >
+                          👤
+                        </div>
+                      )}
 
-                        <div className="flex gap-2 mt-2">
+                      <div className="flex-1">
 
-                          <button
-                            type="button"
+                        {/* HEADER */}
+
+                        <div className="flex justify-between">
+
+                          <div
+                            className="cursor-pointer"
                             onClick={() =>
-                              handleUpdate(
+                              navigate(
+                                `/profile/${comment.user.username}`
+                              )
+                            }
+                          >
+                            <p className="font-semibold hover:text-blue-600">
+                              {comment.user.firstName}{" "}
+                              {comment.user.lastName}
+                            </p>
+
+                            <p className="text-xs text-gray-500">
+                              @{comment.user.username}
+                            </p>
+                          </div>
+
+                          <div className="flex gap-2 text-sm">
+
+                            {isOwner && (
+                              <>
+                                <button
+                                  onClick={() =>
+                                    startEdit(comment)
+                                  }
+                                  className="text-blue-600"
+                                >
+                                  Edit
+                                </button>
+
+                                <button
+                                  onClick={() =>
+                                    handleDelete(
+                                      comment.id
+                                    )
+                                  }
+                                  className="text-red-600"
+                                >
+                                  Hapus
+                                </button>
+                              </>
+                            )}
+
+                            <button
+                              onClick={() => {
+                                if (
+                                  replyingTo ===
+                                  comment.id
+                                ) {
+                                  setReplyingTo(null);
+                                  setReplyContent("");
+                                } else {
+                                  setReplyingTo(
+                                    comment.id
+                                  );
+                                  setReplyContent("");
+                                  setEditingId(null);
+                                }
+                              }}
+                              className="text-blue-600 font-semibold"
+                            >
+                              {replyingTo === comment.id
+                                ? "Batal"
+                                : "Reply"}
+                            </button>
+
+                          </div>
+                        </div>
+
+                        {/* CONTENT */}
+
+                        {editingId === comment.id ? (
+                          <div className="mt-2">
+
+                            <textarea
+                              value={editContent}
+                              onChange={(e) =>
+                                setEditContent(
+                                  e.target.value
+                                )
+                              }
+                              className="border rounded-lg w-full p-2"
+                              rows="2"
+                            />
+
+                            <div className="flex gap-2 mt-2">
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleUpdate(
+                                    comment.id
+                                  )
+                                }
+                                className="bg-blue-600 text-white px-3 py-1 rounded"
+                              >
+                                Simpan
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={cancelEdit}
+                                className="bg-gray-200 px-3 py-1 rounded"
+                              >
+                                Batal
+                              </button>
+
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="mt-2 text-gray-800 whitespace-pre-wrap">
+                            {comment.content}
+                          </p>
+                        )}
+
+                        {/* DATE */}
+
+                        <p className="text-xs text-gray-400 mt-2">
+                          {new Date(
+                            comment.createdAt
+                          ).toLocaleString()}
+                        </p>
+
+                        {/* REPLY FORM */}
+
+                        {replyingTo === comment.id && (
+                          <form
+                            onSubmit={(e) =>
+                              handleReplySubmit(
+                                e,
                                 comment.id
                               )
                             }
-                            className="bg-blue-600 text-white px-3 py-1 rounded"
+                            className="mt-3 flex gap-2"
                           >
-                            Simpan
-                          </button>
+                            <input
+                              type="text"
+                              value={replyContent}
+                              onChange={(e) =>
+                                setReplyContent(
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Tulis balasan..."
+                              className="border rounded-full px-3 py-2 flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
 
-                          <button
-                            type="button"
-                            onClick={cancelEdit}
-                            className="bg-gray-200 px-3 py-1 rounded"
-                          >
-                            Batal
-                          </button>
-
-                        </div>
-
-                      </div>
-                    ) : (
-                      <p className="mt-2 text-gray-800 whitespace-pre-wrap">
-                        {comment.content}
-                      </p>
-                    )}
-
-                    {/* DATE */}
-
-                    <p className="text-xs text-gray-400 mt-2">
-                      {new Date(
-                        comment.createdAt
-                      ).toLocaleString()}
-                    </p>
-
-                    {/* REPLY FORM */}
-
-                    {replyingTo === comment.id && (
-                      <form
-                        onSubmit={(e) =>
-                          handleReplySubmit(
-                            e,
-                            comment.id
-                          )
-                        }
-                        className="mt-3 flex gap-2"
-                      >
-                        <input
-                          type="text"
-                          value={replyContent}
-                          onChange={(e) =>
-                            setReplyContent(
-                              e.target.value
-                            )
-                          }
-                          placeholder="Tulis balasan..."
-                          className="border rounded-lg px-3 py-2 flex-1"
-                        />
-
-                        <button
-                          type="submit"
-                          disabled={!replyContent.trim()}
-                          className="bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
-                        >
-                          Reply
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setReplyingTo(null);
-                            setReplyContent("");
-                          }}
-                          className="bg-gray-200 px-4 py-2 rounded-lg"
-                        >
-                          Batal
-                        </button>
-                      </form>
-                    )}
-
-                    {/* REPLIES */}
-
-                    {comment.replies?.length > 0 && (
-                      <div className="ml-10 mt-3 space-y-3 border-l-2 pl-4">
-
-                        {comment.replies.map((reply) => {
-                          const isReplyOwner =
-                            currentUser?.id === reply.user.id;
-
-                          return (
-                            <div
-                              key={reply.id}
-                              className="bg-white rounded-lg p-3"
+                            <button
+                              type="submit"
+                              disabled={
+                                !replyContent.trim()
+                              }
+                              className="bg-blue-600 text-white px-4 py-2 rounded-full disabled:opacity-50"
                             >
-                              <div className="flex gap-2">
+                              Reply
+                            </button>
+                          </form>
+                        )}
 
-                                {/* AVATAR */}
+                        {/* REPLIES */}
 
-                                {reply.user.avatar ? (
-                                  <img
-                                    src={`http://localhost:5000${reply.user.avatar}`}
-                                    alt={reply.user.username}
-                                    onClick={() =>
-                                      navigate(
-                                        `/profile/${reply.user.username}`
-                                      )
-                                    }
-                                    className="w-8 h-8 rounded-full object-cover cursor-pointer"
-                                  />
-                                ) : (
+                        {comment.replies?.length > 0 && (
+                          <div className="ml-10 mt-3 space-y-3 border-l-2 pl-4">
+
+                            {comment.replies.map(
+                              (reply) => {
+                                const isReplyOwner =
+                                  currentUser?.id ===
+                                  reply.user.id;
+
+                                return (
                                   <div
-                                    onClick={() =>
-                                      navigate(
-                                        `/profile/${reply.user.username}`
-                                      )
-                                    }
-                                    className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer"
+                                    key={reply.id}
+                                    className="bg-white rounded-lg p-3"
                                   >
-                                    👤
-                                  </div>
-                                )}
+                                    <div className="flex gap-2">
 
-                                <div className="flex-1">
-
-                                  {/* HEADER */}
-
-                                  <div className="flex justify-between">
-
-                                    <div
-                                      className="cursor-pointer"
-                                      onClick={() =>
-                                        navigate(
-                                          `/profile/${reply.user.username}`
-                                        )
-                                      }
-                                    >
-                                      <p className="font-semibold text-sm hover:text-blue-600">
-                                        {reply.user.firstName}{" "}
-                                        {reply.user.lastName}
-                                      </p>
-
-                                      <p className="text-xs text-gray-500">
-                                        @{reply.user.username}
-                                      </p>
-                                    </div>
-
-                                    {/* ACTION */}
-
-                                    {isReplyOwner && (
-                                      <div className="flex gap-2 text-xs">
-
-                                        <button
-                                          onClick={() =>
-                                            startEdit(reply)
+                                      {reply.user
+                                        .avatar ? (
+                                        <img
+                                          src={`http://localhost:5000${reply.user.avatar}`}
+                                          alt={
+                                            reply.user
+                                              .username
                                           }
-                                          className="text-blue-600"
-                                        >
-                                          Edit
-                                        </button>
-
-                                        <button
                                           onClick={() =>
-                                            handleDelete(reply.id)
+                                            navigate(
+                                              `/profile/${reply.user.username}`
+                                            )
                                           }
-                                          className="text-red-600"
+                                          className="w-8 h-8 rounded-full object-cover cursor-pointer"
+                                        />
+                                      ) : (
+                                        <div
+                                          onClick={() =>
+                                            navigate(
+                                              `/profile/${reply.user.username}`
+                                            )
+                                          }
+                                          className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer"
                                         >
-                                          Hapus
-                                        </button>
+                                          👤
+                                        </div>
+                                      )}
+
+                                      <div className="flex-1">
+
+                                        <div className="flex justify-between">
+
+                                          <div
+                                            className="cursor-pointer"
+                                            onClick={() =>
+                                              navigate(
+                                                `/profile/${reply.user.username}`
+                                              )
+                                            }
+                                          >
+                                            <p className="font-semibold text-sm hover:text-blue-600">
+                                              {
+                                                reply.user
+                                                  .firstName
+                                              }{" "}
+                                              {
+                                                reply.user
+                                                  .lastName
+                                              }
+                                            </p>
+
+                                            <p className="text-xs text-gray-500">
+                                              @
+                                              {
+                                                reply.user
+                                                  .username
+                                              }
+                                            </p>
+                                          </div>
+
+                                          {isReplyOwner && (
+                                            <div className="flex gap-2 text-xs">
+
+                                              <button
+                                                onClick={() =>
+                                                  startEdit(
+                                                    reply
+                                                  )
+                                                }
+                                                className="text-blue-600"
+                                              >
+                                                Edit
+                                              </button>
+
+                                              <button
+                                                onClick={() =>
+                                                  handleDelete(
+                                                    reply.id
+                                                  )
+                                                }
+                                                className="text-red-600"
+                                              >
+                                                Hapus
+                                              </button>
+
+                                            </div>
+                                          )}
+
+                                        </div>
+
+                                        {/* REPLY CONTENT */}
+
+                                        {editingId ===
+                                        reply.id ? (
+                                          <div className="mt-2">
+
+                                            <textarea
+                                              value={
+                                                editContent
+                                              }
+                                              onChange={(
+                                                e
+                                              ) =>
+                                                setEditContent(
+                                                  e.target
+                                                    .value
+                                                )
+                                              }
+                                              className="border rounded-lg w-full p-2"
+                                              rows="2"
+                                            />
+
+                                            <div className="flex gap-2 mt-2">
+
+                                              <button
+                                                type="button"
+                                                onClick={() =>
+                                                  handleUpdate(
+                                                    reply.id
+                                                  )
+                                                }
+                                                className="bg-blue-600 text-white px-3 py-1 rounded"
+                                              >
+                                                Simpan
+                                              </button>
+
+                                              <button
+                                                type="button"
+                                                onClick={
+                                                  cancelEdit
+                                                }
+                                                className="bg-gray-200 px-3 py-1 rounded"
+                                              >
+                                                Batal
+                                              </button>
+
+                                            </div>
+
+                                          </div>
+                                        ) : (
+                                          <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">
+                                            {
+                                              reply.content
+                                            }
+                                          </p>
+                                        )}
+
+                                        <p className="text-xs text-gray-400 mt-1">
+                                          {new Date(
+                                            reply.createdAt
+                                          ).toLocaleString()}
+                                        </p>
 
                                       </div>
-                                    )}
-
-                                  </div>
-
-                                  {/* CONTENT */}
-
-                                  {editingId === reply.id ? (
-                                    <div className="mt-2">
-
-                                      <textarea
-                                        value={editContent}
-                                        onChange={(e) =>
-                                          setEditContent(e.target.value)
-                                        }
-                                        className="border rounded-lg w-full p-2"
-                                        rows="2"
-                                      />
-
-                                      <div className="flex gap-2 mt-2">
-
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            handleUpdate(reply.id)
-                                          }
-                                          className="bg-blue-600 text-white px-3 py-1 rounded"
-                                        >
-                                          Simpan
-                                        </button>
-
-                                        <button
-                                          type="button"
-                                          onClick={cancelEdit}
-                                          className="bg-gray-200 px-3 py-1 rounded"
-                                        >
-                                          Batal
-                                        </button>
-
-                                      </div>
-
                                     </div>
-                                  ) : (
-                                    <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">
-                                      {reply.content}
-                                    </p>
-                                  )}
+                                  </div>
+                                );
+                              }
+                            )}
 
-                                  {/* DATE */}
-
-                                  <p className="text-xs text-gray-400 mt-1">
-                                    {new Date(
-                                      reply.createdAt
-                                    ).toLocaleString()}
-                                  </p>
-
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
+                          </div>
+                        )}
 
                       </div>
-                    )}
-
+                    </div>
                   </div>
+                );
+              })}
 
-                </div>
-
-              </div>
-            );
-          })}
-
+            </div>
+          )}
         </div>
       )}
-
     </div>
   );
 }
