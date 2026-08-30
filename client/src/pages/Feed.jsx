@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import MainLayout from "../layouts/MainLayout";
 import PostCard from "../components/PostCard";
@@ -11,6 +11,8 @@ export default function Feed() {
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  const observerRef = useRef(null);
 
   async function loadFeed(pageNumber) {
     try {
@@ -58,17 +60,42 @@ export default function Feed() {
     );
   }
 
-  async function handleLoadMore() {
-    if (loading || !hasNextPage) {
-      return;
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const firstEntry = entries[0];
+
+        if (
+          firstEntry.isIntersecting &&
+          !loading &&
+          hasNextPage
+        ) {
+          setPage((currentPage) => {
+            const nextPage = currentPage + 1;
+
+            loadFeed(nextPage);
+
+            return nextPage;
+          });
+        }
+      },
+      {
+        threshold: 0.1,
+      }
+    );
+
+    const currentObserverRef = observerRef.current;
+
+    if (currentObserverRef) {
+      observer.observe(currentObserverRef);
     }
 
-    const nextPage = page + 1;
-
-    await loadFeed(nextPage);
-
-    setPage(nextPage);
-  }
+    return () => {
+      if (currentObserverRef) {
+        observer.unobserve(currentObserverRef);
+      }
+    };
+  }, [loading, hasNextPage]);
 
   return (
     <MainLayout>
@@ -91,18 +118,17 @@ export default function Feed() {
         ))}
       </div>
 
-      <div className="flex justify-center py-6">
-        {hasNextPage ? (
-          <button
-            onClick={handleLoadMore}
-            disabled={loading}
-            className="bg-blue-600 text-white px-5 py-2 rounded-lg disabled:opacity-50"
-          >
-            {loading
-              ? "Memuat..."
-              : "Muat lebih banyak"}
-          </button>
-        ) : (
+      <div
+        ref={observerRef}
+        className="flex justify-center py-6"
+      >
+        {loading && (
+          <p className="text-gray-500">
+            Memuat post...
+          </p>
+        )}
+
+        {!loading && !hasNextPage && (
           <p className="text-gray-500">
             Tidak ada post lagi.
           </p>
