@@ -5,6 +5,14 @@ export async function getPosts() {
   return response.data;
 }
 
+export async function getFeed(page = 1, limit = 10) {
+  const response = await api.get(
+    `/feed?page=${page}&limit=${limit}`
+  );
+
+  return response.data;
+}
+
 export async function getPost(id) {
   const response = await api.get(`/posts/${id}`);
   return response.data;
