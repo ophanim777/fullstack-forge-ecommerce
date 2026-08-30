@@ -37,12 +37,3 @@ export async function likePost(id) {
   const response = await api.post(`/posts/${id}/like`);
   return response.data;
 }
-
-
-export async function getFeed(page = 1, limit = 10) {
-  const response = await api.get(
-    `/feed?page=${page}&limit=${limit}`
-  );
-
-  return response.data;
-}
