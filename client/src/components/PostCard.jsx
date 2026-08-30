@@ -202,11 +202,18 @@ export default function PostCard({ post, onDelete, onUpdate, }) {
         {new Date(post.createdAt).toLocaleString()}
       </div>
 
-      <CommentSection postId={post.id} 
-      onCommentCountChange={(change) => {
-        setCommentsCount((prev) => prev + change);
-      }}
-      />
+      <div
+        id={`comments-${post.id}`}
+        className="mt-3"
+      >
+        <CommentSection
+          postId={post.id}
+          onCommentCountChange={(change) => {
+            setCommentsCount((prev) => prev + change);
+          }}
+        />
+      </div>
+
     </div>
   );
 }
