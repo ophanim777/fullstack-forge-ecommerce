@@ -152,45 +152,83 @@ export default function PostCard({ post, onDelete, onUpdate, }) {
         </div>
 
         
-        <div className="flex items-center justify-around border-t pt-2">
-          <button
-            onClick={handleLike}
-            className={`flex-1 py-2 rounded-lg font-semibold ${
-              liked
-                ? "text-red-500"
-                : "text-gray-600 hover:text-red-500 hover:bg-gray-100"
-            }`}
-          >
-            {liked ? "❤️ Liked" : "♡ Like"}
-          </button>
+       <div className="flex items-center gap-6 border-y py-3">
 
-          <button
-            onClick={() => setShowComments((prev) => !prev)}
-            className="flex-1 py-2 rounded-lg text-gray-600 font-semibold hover:text-blue-600 hover:bg-gray-100"
-          >
-            💬 Comment
-          </button>
+        {/* LIKE */}
 
-          {user?.id === post.author.id && (
-            <>
-              <button
-                onClick={() => setEditing(true)}
-                className="flex-1 py-2 rounded-lg text-gray-600 font-semibold hover:text-blue-600 hover:bg-gray-100"
-              >
-                ✏️ Edit
-              </button>
+        <button
+          type="button"
+          onClick={handleLike}
+          className="flex flex-col items-center min-w-[60px] hover:scale-105 transition"
+        >
+          <span className="text-2xl">
+            {liked ? "❤️" : "🤍"}
+          </span>
 
-              <button
-                onClick={handleDelete}
-                className="flex-1 py-2 rounded-lg text-gray-600 font-semibold hover:text-red-500 hover:bg-gray-100"
-              >
-                🗑️ Delete
-              </button>
-            </>
-          )}
-        </div>
+          <span className="text-sm text-gray-600">
+            {likesCount}
+          </span>
+        </button>
+
+
+        {/* COMMENT */}
+
+        <button
+          type="button"
+          onClick={() =>
+            setCommentsOpen((prev) => !prev)
+          }
+          className={`flex flex-col items-center min-w-[60px] hover:scale-105 transition ${
+            commentsOpen
+              ? "text-blue-600"
+              : "text-gray-600"
+          }`}
+        >
+          <span className="text-2xl">
+            💬
+          </span>
+
+          <span className="text-sm">
+            {commentsCount}
+          </span>
+        </button>
+
+
+        {/* EDIT */}
+
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          className="flex flex-col items-center min-w-[60px] text-gray-600 hover:text-blue-600"
+        >
+          <span className="text-2xl">
+            ✏️
+          </span>
+
+          <span className="text-sm">
+            Edit
+          </span>
+        </button>
+
+
+        {/* DELETE */}
+
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="flex flex-col items-center min-w-[60px] text-gray-600 hover:text-red-600"
+        >
+          <span className="text-2xl">
+            🗑️
+          </span>
+
+          <span className="text-sm">
+            Delete
+          </span>
+        </button>
+
       </div>
-
+      </div>
 
       <div className="mt-3 text-sm text-gray-400">
         {new Date(post.createdAt).toLocaleString()}
