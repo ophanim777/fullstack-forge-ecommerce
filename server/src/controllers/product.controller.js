@@ -1,4 +1,6 @@
 import { getProducts, createProduct, } from "../services/product.service.js";
+import { validateCreateProduct } from "../validators/product.validator.js";
+
 
 export async function getProductsController(req, res, next) {
   try {
