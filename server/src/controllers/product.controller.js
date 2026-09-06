@@ -1,4 +1,4 @@
-import { getProducts, createProduct, getProductById, } from "../services/product.service.js";
+import { getProducts, createProduct, getProductById, updateProduct, } from "../services/product.service.js";
 import { validateCreateProduct } from "../validators/product.validator.js";
 
 
