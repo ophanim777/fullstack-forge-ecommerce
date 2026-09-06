@@ -40,3 +40,23 @@ export async function createProduct(data) {
     },
   });
 }
+
+export async function updateProduct(id, data) {
+  return prisma.product.update({
+    where: {
+      id,
+    },
+    data: {
+      name: data.name.trim(),
+      slug: data.slug.trim(),
+      description: data.description.trim(),
+      price: data.price,
+      stock: Number(data.stock),
+      categoryId: data.categoryId,
+    },
+    include: {
+      category: true,
+      images: true,
+    },
+  });
+}
