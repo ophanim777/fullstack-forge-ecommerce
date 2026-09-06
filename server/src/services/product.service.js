@@ -12,6 +12,18 @@ export async function getProducts() {
   });
 }
 
+export async function getProductById(id) {
+  return prisma.product.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      category: true,
+      images: true,
+    },
+  });
+}
+
 export async function createProduct(data) {
   return prisma.product.create({
     data: {
