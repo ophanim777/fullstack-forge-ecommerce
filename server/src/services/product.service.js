@@ -1,3 +1,5 @@
+import { prisma } from "../config/prisma.js";
+
 export async function getProducts() {
   return prisma.product.findMany({
     include: {
