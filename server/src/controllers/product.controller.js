@@ -1,5 +1,5 @@
 import { getProducts, createProduct, getProductById, updateProduct, } from "../services/product.service.js";
-import { validateCreateProduct } from "../validators/product.validator.js";
+import { validateCreateProduct, validateUpdateProduct, } from "../validators/product.validator.js";
 
 
 export async function getProductsController(req, res, next) {
@@ -59,7 +59,7 @@ export async function createProductController(req, res, next) {
 
 export async function updateProductController(req, res, next) {
   try {
-    const { isValid, errors } = validateCreateProduct(req.body);
+    const { isValid, errors } = validateUpdateProduct(req.body);
 
     if (!isValid) {
       return res.status(400).json({
