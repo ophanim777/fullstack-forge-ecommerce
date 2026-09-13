@@ -10,6 +10,7 @@ import feedRoutes from "./feed.routes.js";
 import notificationRoutes from "./notification.routes.js";
 import productRoutes from "./product.routes.js";
 import categoryRoutes from "./category.routes.js";
+import cartRoutes from "./cart.routes.js";
 
 
 const router = Router();
@@ -19,6 +20,7 @@ router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/products", productRoutes);
 router.use("/categories", categoryRoutes);
+router.use("/cart", cartRoutes);
 router.use("/posts", postRoutes);
 router.use(commentRoutes);
 router.use(followRoutes);
