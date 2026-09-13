@@ -113,3 +113,25 @@ export async function updateCategoryController(req, res, next) {
     next(error);
   }
 }
+
+export async function deleteCategoryController(req, res, next) {
+  try {
+    const category = await getCategoryById(req.params.id);
+
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category tidak ditemukan.",
+      });
+    }
+
+    await deleteCategory(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: "Category berhasil dihapus.",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
