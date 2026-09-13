@@ -1,6 +1,12 @@
-import { getCategories, getCategoryById, createCategory, } from "../services/category.service.js";
+import { 
+    getCategories, 
+    getCategoryById, 
+    createCategory, 
+    updateCategory, } from "../services/category.service.js";
+
 import {
   validateCreateCategory,
+  validateUpdateCategory,
 } from "../validators/category.validator.js";
 
 
@@ -52,6 +58,47 @@ export async function createCategoryController(req, res, next) {
     const category = await createCategory(req.body);
 
     res.status(201).json({
+      success: true,
+      data: category,
+    });
+  } catch (error) {
+    if (error.message === "CATEGORY_SLUG_ALREADY_EXISTS") {
+      return res.status(409).json({
+        success: false,
+        message: "Category slug sudah digunakan.",
+      });
+    }
+
+    next(error);
+  }
+}
+
+export async function updateCategoryController(req, res, next) {
+  try {
+    const { isValid, errors } = validateUpdateCategory(req.body);
+
+    if (!isValid) {
+      return res.status(400).json({
+        success: false,
+        errors,
+      });
+    }
+
+    const existingCategory = await getCategoryById(req.params.id);
+
+    if (!existingCategory) {
+      return res.status(404).json({
+        success: false,
+        message: "Category tidak ditemukan.",
+      });
+    }
+
+    const category = await updateCategory(
+      req.params.id,
+      req.body
+    );
+
+    res.status(200).json({
       success: true,
       data: category,
     });
