@@ -15,3 +15,12 @@ export async function getCategoryById(id) {
     },
   });
 }
+
+export async function createCategory(data) {
+  return prisma.category.create({
+    data: {
+      name: data.name.trim(),
+      slug: data.slug.trim(),
+    },
+  });
+}
