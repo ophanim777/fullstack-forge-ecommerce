@@ -66,3 +66,11 @@ export async function updateCategory(id, data) {
     throw error;
   }
 }
+
+export async function deleteCategory(id) {
+  return prisma.category.delete({
+    where: {
+      id,
+    },
+  });
+}
