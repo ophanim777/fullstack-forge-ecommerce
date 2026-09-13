@@ -36,3 +36,33 @@ export async function createCategory(data) {
     throw error;
   }
 }
+
+export async function updateCategory(id, data) {
+  const updateData = {};
+
+  if (data.name !== undefined) {
+    updateData.name = data.name.trim();
+  }
+
+  if (data.slug !== undefined) {
+    updateData.slug = data.slug.trim();
+  }
+
+  try {
+    return await prisma.category.update({
+      where: {
+        id,
+      },
+      data: updateData,
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      throw new Error("CATEGORY_SLUG_ALREADY_EXISTS");
+    }
+
+    throw error;
+  }
+}
