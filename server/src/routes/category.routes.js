@@ -6,6 +6,7 @@ import {
   getCategoriesController,
   getCategoryByIdController,
   createCategoryController,
+  updateCategoryController,
 } from "../controllers/category.controller.js";
 
 const router = Router();
@@ -18,5 +19,10 @@ router.post(
   requireAdmin,
   createCategoryController
 );
-
+router.patch(
+  "/:id",
+  authenticate,
+  requireAdmin,
+  updateCategoryController
+);
 export default router;
