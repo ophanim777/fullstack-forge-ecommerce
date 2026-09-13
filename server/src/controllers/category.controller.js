@@ -2,7 +2,8 @@ import {
     getCategories, 
     getCategoryById, 
     createCategory, 
-    updateCategory, } from "../services/category.service.js";
+    updateCategory, 
+    deleteCategory, } from "../services/category.service.js";
 
 import {
   validateCreateCategory,
