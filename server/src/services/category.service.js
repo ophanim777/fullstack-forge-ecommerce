@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma.js";
+import { Prisma } from "@prisma/client";
 
 export async function getCategories() {
   return prisma.category.findMany({
@@ -17,10 +18,21 @@ export async function getCategoryById(id) {
 }
 
 export async function createCategory(data) {
-  return prisma.category.create({
-    data: {
-      name: data.name.trim(),
-      slug: data.slug.trim(),
-    },
-  });
+  try {
+    return await prisma.category.create({
+      data: {
+        name: data.name.trim(),
+        slug: data.slug.trim(),
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      throw new Error("CATEGORY_SLUG_ALREADY_EXISTS");
+    }
+
+    throw error;
+  }
 }
