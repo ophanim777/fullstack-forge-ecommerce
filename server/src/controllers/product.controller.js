@@ -1,4 +1,4 @@
-import { getProducts, createProduct, getProductById, updateProduct, } from "../services/product.service.js";
+import { getProducts, createProduct, getProductById, updateProduct, deleteProduct, } from "../services/product.service.js";
 import { validateCreateProduct, validateUpdateProduct, } from "../validators/product.validator.js";
 
 
@@ -76,6 +76,28 @@ export async function updateProductController(req, res, next) {
     res.status(200).json({
       success: true,
       data: product,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteProductController(req, res, next) {
+  try {
+    const product = await getProductById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product tidak ditemukan.",
+      });
+    }
+
+    await deleteProduct(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: "Product berhasil dihapus.",
     });
   } catch (error) {
     next(error);
