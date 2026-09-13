@@ -5,6 +5,7 @@ import {
   createProductController,
   getProductByIdController,
   updateProductController,
+  deleteProductController,
 } from "../controllers/product.controller.js";
 
 import { authenticate } from "../middleware/auth.middleware.js";
@@ -28,6 +29,13 @@ router.patch(
   authenticate,
   requireAdmin,
   updateProductController
+);
+
+router.delete(
+  "/:id",
+  authenticate,
+  requireAdmin,
+  deleteProductController
 );
 
 export default router;
