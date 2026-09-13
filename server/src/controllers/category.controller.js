@@ -56,6 +56,13 @@ export async function createCategoryController(req, res, next) {
       data: category,
     });
   } catch (error) {
+    if (error.message === "CATEGORY_SLUG_ALREADY_EXISTS") {
+      return res.status(409).json({
+        success: false,
+        message: "Category slug sudah digunakan.",
+      });
+    }
+
     next(error);
   }
 }
