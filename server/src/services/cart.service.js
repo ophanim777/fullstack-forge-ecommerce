@@ -115,3 +115,50 @@ export async function addCartItem(userId, productId, quantity) {
     },
   });
 }
+
+export async function updateCartItem(userId, itemId, quantity) {
+  const cart = await prisma.cart.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  if (!cart) {
+    throw new Error("CART_NOT_FOUND");
+  }
+
+  const cartItem = await prisma.cartItem.findFirst({
+    where: {
+      id: itemId,
+      cartId: cart.id,
+    },
+    include: {
+      product: true,
+    },
+  });
+
+  if (!cartItem) {
+    throw new Error("CART_ITEM_NOT_FOUND");
+  }
+
+  if (quantity > cartItem.product.stock) {
+    throw new Error("INSUFFICIENT_STOCK");
+  }
+
+  return prisma.cartItem.update({
+    where: {
+      id: cartItem.id,
+    },
+    data: {
+      quantity,
+    },
+    include: {
+      product: {
+        include: {
+          category: true,
+          images: true,
+        },
+      },
+    },
+  });
+}
