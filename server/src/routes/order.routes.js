@@ -3,6 +3,7 @@ import { Router } from "express";
 import {
   getOrdersController,
   getOrderByIdController,
+  createOrderController
 } from "../controllers/order.controller.js";
 
 import { authenticate } from "../middleware/auth.middleware.js";
@@ -13,6 +14,12 @@ router.get(
   "/",
   authenticate,
   getOrdersController
+);
+
+router.post(
+  "/",
+  authenticate,
+  createOrderController
 );
 
 router.get(
