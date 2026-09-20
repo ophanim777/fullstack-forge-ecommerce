@@ -132,6 +132,19 @@ export async function updateOrderStatus(orderId, status) {
     throw new Error("ORDER_NOT_FOUND");
   }
 
+  const allowedTransitions = {
+    PENDING: ["PAID", "CANCELLED"],
+    PAID: ["PROCESSING", "CANCELLED"],
+    PROCESSING: ["SHIPPED"],
+    SHIPPED: ["DELIVERED"],
+    DELIVERED: [],
+    CANCELLED: [],
+  };
+
+  if (!allowedTransitions[order.status].includes(status)) {
+    throw new Error("INVALID_STATUS_TRANSITION");
+  }
+
   return prisma.order.update({
     where: {
       id: orderId,
