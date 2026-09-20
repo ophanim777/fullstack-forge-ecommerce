@@ -12,6 +12,7 @@ import productRoutes from "./product.routes.js";
 import categoryRoutes from "./category.routes.js";
 import cartRoutes from "./cart.routes.js";
 import orderRoutes from "./order.routes.js";
+import reviewRoutes from "./review.routes.js";
 
 
 const router = Router();
@@ -23,6 +24,7 @@ router.use("/products", productRoutes);
 router.use("/categories", categoryRoutes);
 router.use("/cart", cartRoutes);
 router.use("/orders", orderRoutes);
+router.use("/reviews", reviewRoutes);
 router.use("/posts", postRoutes);
 router.use(commentRoutes);
 router.use(followRoutes);
