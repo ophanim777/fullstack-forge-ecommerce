@@ -6,7 +6,7 @@ import {
   deleteCartItem,
 } from "../services/cart.service.js";
 
-import { validateAddCartItem } from "../validators/cart.validator.js";
+import { validateAddCartItem, validateUpdateCartItem, } from "../validators/cart.validator.js";
 
 export async function getCartController(req, res, next) {
   try {
@@ -76,29 +76,16 @@ export async function addCartItemController(req, res, next) {
 
 export async function updateCartItemController(req, res, next) {
   try {
+    const { isValid, errors } = validateUpdateCartItem(req.body);
+
+    if (!isValid) {
+      return res.status(400).json({
+        success: false,
+        errors,
+      });
+    }
+
     const quantity = Number(req.body.quantity);
-
-    if (
-      req.body.quantity === undefined ||
-      req.body.quantity === null ||
-      req.body.quantity === ""
-    ) {
-      return res.status(400).json({
-        success: false,
-        errors: {
-          quantity: "Quantity is required",
-        },
-      });
-    }
-
-    if (!Number.isInteger(quantity) || quantity < 1) {
-      return res.status(400).json({
-        success: false,
-        errors: {
-          quantity: "Quantity must be a positive integer",
-        },
-      });
-    }
 
     const item = await updateCartItem(
       req.user.id,
