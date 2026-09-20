@@ -113,6 +113,13 @@ export async function updateOrderStatusController(req, res, next) {
       });
     }
 
+    if (error.message === "INVALID_STATUS_TRANSITION") {
+    return res.status(409).json({
+        success: false,
+        message: "Transisi status order tidak valid.",
+    });
+    }
+
     next(error);
   }
 }
