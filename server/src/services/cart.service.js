@@ -162,3 +162,33 @@ export async function updateCartItem(userId, itemId, quantity) {
     },
   });
 }
+
+
+export async function deleteCartItem(userId, itemId) {
+  const cart = await prisma.cart.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  if (!cart) {
+    throw new Error("CART_NOT_FOUND");
+  }
+
+  const cartItem = await prisma.cartItem.findFirst({
+    where: {
+      id: itemId,
+      cartId: cart.id,
+    },
+  });
+
+  if (!cartItem) {
+    throw new Error("CART_ITEM_NOT_FOUND");
+  }
+
+  return prisma.cartItem.delete({
+    where: {
+      id: cartItem.id,
+    },
+  });
+}
