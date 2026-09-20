@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { getCartController, addCartItemController, } from "../controllers/cart.controller.js";
+import { getCartController, addCartItemController, updateCartItemController, } from "../controllers/cart.controller.js";
 
 import { authenticate } from "../middleware/auth.middleware.js";
 
@@ -16,6 +16,12 @@ router.post(
   "/items",
   authenticate,
   addCartItemController
+);
+
+router.patch(
+  "/items/:itemId",
+  authenticate,
+  updateCartItemController
 );
 
 export default router;
