@@ -3,6 +3,7 @@ import {
   createCart,
   addCartItem,
   updateCartItem,
+  deleteCartItem,
 } from "../services/cart.service.js";
 
 import { validateAddCartItem } from "../validators/cart.validator.js";
@@ -128,6 +129,37 @@ export async function updateCartItemController(req, res, next) {
       return res.status(409).json({
         success: false,
         message: "Stok product tidak mencukupi.",
+      });
+    }
+
+    next(error);
+  }
+}
+
+
+export async function deleteCartItemController(req, res, next) {
+  try {
+    await deleteCartItem(
+      req.user.id,
+      req.params.itemId
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Cart item berhasil dihapus.",
+    });
+  } catch (error) {
+    if (error.message === "CART_NOT_FOUND") {
+      return res.status(404).json({
+        success: false,
+        message: "Cart tidak ditemukan.",
+      });
+    }
+
+    if (error.message === "CART_ITEM_NOT_FOUND") {
+      return res.status(404).json({
+        success: false,
+        message: "Cart item tidak ditemukan.",
       });
     }
 
