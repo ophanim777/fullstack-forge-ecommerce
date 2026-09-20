@@ -2,6 +2,7 @@ import {
   getOrdersByUserId,
   getOrderById,
   createOrder,
+  updateOrderStatus,
 } from "../services/order.service.js";
 
 export async function getOrdersController(req, res, next) {
@@ -67,6 +68,48 @@ export async function createOrderController(req, res, next) {
       return res.status(409).json({
         success: false,
         message: "Stok product tidak mencukupi.",
+      });
+    }
+
+    next(error);
+  }
+}
+
+
+export async function updateOrderStatusController(req, res, next) {
+  try {
+    const { status } = req.body;
+
+    const allowedStatuses = [
+      "PENDING",
+      "PAID",
+      "PROCESSING",
+      "SHIPPED",
+      "DELIVERED",
+      "CANCELLED",
+    ];
+
+    if (!status || !allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Status order tidak valid.",
+      });
+    }
+
+    const order = await updateOrderStatus(
+      req.params.id,
+      status
+    );
+
+    res.status(200).json({
+      success: true,
+      data: order,
+    });
+  } catch (error) {
+    if (error.message === "ORDER_NOT_FOUND") {
+      return res.status(404).json({
+        success: false,
+        message: "Order tidak ditemukan.",
       });
     }
 
