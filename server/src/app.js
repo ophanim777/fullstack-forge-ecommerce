@@ -8,6 +8,7 @@ import { swaggerSpec } from "./config/swagger.js";
 
 import routes from "./routes/index.js";
 import { errorHandler } from "./middleware/error.middleware.js";
+import productImageRoutes from "./routes/product-image.routes.js";
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use(
 );
 
 app.use("/api", routes);
+app.use("/api/product-images", productImageRoutes);
 app.use(errorHandler);
 
 app.get("/api/health", (req, res) => {
