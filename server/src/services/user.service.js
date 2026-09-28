@@ -1,19 +1,15 @@
 import { prisma } from "../config/prisma.js";
 
-export async function updateProfile(userId, data) {
-  return prisma.user.update({
+export async function getProfileByUsername(username) {
+  return prisma.user.findUnique({
     where: {
-      id: userId,
+      username,
     },
-
-    data,
-
     select: {
       id: true,
       firstName: true,
       lastName: true,
       username: true,
-      email: true,
       bio: true,
       avatar: true,
       role: true,
@@ -44,35 +40,6 @@ export async function updateAvatar(userId, avatarPath) {
   });
 }
 
-export async function getProfileByUsername(username) {
-  return prisma.user.findUnique({
-    where: {
-      username,
-    },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      username: true,
-      bio: true,
-      avatar: true,
-      role: true,
-
-      posts: {
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: {
-          id: true,
-          content: true,
-          image: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-    },
-  });
-}
 
 export async function getUserById(userId) {
   return prisma.user.findUnique({
