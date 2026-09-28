@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma.js";
+import { Prisma } from "@prisma/client";
 
 export async function getProducts() {
   return prisma.product.findMany({
@@ -25,20 +26,31 @@ export async function getProductById(id) {
 }
 
 export async function createProduct(data) {
-  return prisma.product.create({
-    data: {
-      name: data.name.trim(),
-      slug: data.slug.trim(),
-      description: data.description.trim(),
-      price: data.price,
-      stock: Number(data.stock),
-      categoryId: data.categoryId,
-    },
-    include: {
-      category: true,
-      images: true,
-    },
-  });
+  try {
+    return await prisma.product.create({
+      data: {
+        name: data.name.trim(),
+        slug: data.slug.trim(),
+        description: data.description.trim(),
+        price: data.price,
+        stock: Number(data.stock),
+        categoryId: data.categoryId,
+      },
+      include: {
+        category: true,
+        images: true,
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      throw new Error("PRODUCT_SLUG_ALREADY_EXISTS");
+    }
+
+    throw error;
+  }
 }
 
 export async function updateProduct(id, data) {
@@ -68,16 +80,27 @@ export async function updateProduct(id, data) {
     updateData.categoryId = data.categoryId;
   }
 
-  return prisma.product.update({
-    where: {
-      id,
-    },
-    data: updateData,
-    include: {
-      category: true,
-      images: true,
-    },
-  });
+  try {
+    return await prisma.product.update({
+      where: {
+        id,
+      },
+      data: updateData,
+      include: {
+        category: true,
+        images: true,
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      throw new Error("PRODUCT_SLUG_ALREADY_EXISTS");
+    }
+
+    throw error;
+  }
 }
 
 export async function deleteProduct(id) {
