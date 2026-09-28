@@ -1,6 +1,7 @@
 import { ZodError } from "zod";
-import { ApiError } from "../utils/apiError.js";
+import { MulterError } from "multer";
 
+import { ApiError } from "../utils/apiError.js";
 
 export function errorHandler(err, req, res, next) {
   if (err instanceof ZodError) {
@@ -10,7 +11,28 @@ export function errorHandler(err, req, res, next) {
     });
   }
 
-   if (err instanceof ApiError) {
+  if (err instanceof MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        success: false,
+        message: "Ukuran avatar maksimal 2 MB.",
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: "Upload file avatar gagal.",
+    });
+  }
+
+  if (err.message === "INVALID_AVATAR_TYPE") {
+    return res.status(400).json({
+      success: false,
+      message: "Format avatar harus JPG, PNG, atau WebP.",
+    });
+  }
+
+  if (err instanceof ApiError) {
     return res.status(err.statusCode).json({
       success: false,
       message: err.message,
