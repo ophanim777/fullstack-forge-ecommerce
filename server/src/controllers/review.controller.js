@@ -86,6 +86,13 @@ export async function createReviewController(
       });
     }
 
+    if (error.message === "PRODUCT_NOT_PURCHASED") {
+  return res.status(403).json({
+    success: false,
+    message: "Anda hanya dapat memberikan review untuk product yang sudah dibeli.",
+  });
+}
+
     if (error.message === "REVIEW_ALREADY_EXISTS") {
       return res.status(409).json({
         success: false,
