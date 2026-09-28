@@ -4,6 +4,7 @@ import {
   createProductImage,
   deleteProductImage,
 } from "../services/product-image.service.js";
+import { createProductImageSchema } from "../validators/product-image.validator.js";
 
 export async function getProductImagesController(req, res, next) {
   try {
@@ -40,16 +41,12 @@ export async function getProductImageByIdController(req, res, next) {
 
 export async function createProductImageController(req, res, next) {
   try {
-    const { productId, url } = req.body;
+    const body = createProductImageSchema.parse(req.body);
 
-    if (!productId || !url) {
-      return res.status(400).json({
-        success: false,
-        message: "productId dan url wajib diisi.",
-      });
-    }
-
-    const image = await createProductImage(productId, url);
+    const image = await createProductImage(
+      body.productId,
+      body.url
+    );
 
     res.status(201).json({
       success: true,
