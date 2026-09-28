@@ -42,7 +42,12 @@ export async function getReviewById(id) {
   });
 }
 
-export async function createReview(userId, productId, rating, comment) {
+export async function createReview(
+  userId,
+  productId,
+  rating,
+  comment
+) {
   const product = await prisma.product.findUnique({
     where: {
       id: productId,
@@ -51,6 +56,27 @@ export async function createReview(userId, productId, rating, comment) {
 
   if (!product) {
     throw new Error("PRODUCT_NOT_FOUND");
+  }
+
+  const purchasedProduct = await prisma.orderItem.findFirst({
+    where: {
+      productId,
+      order: {
+        userId,
+        status: {
+          in: [
+            "PAID",
+            "PROCESSING",
+            "SHIPPED",
+            "DELIVERED",
+          ],
+        },
+      },
+    },
+  });
+
+  if (!purchasedProduct) {
+    throw new Error("PRODUCT_NOT_PURCHASED");
   }
 
   const existingReview = await prisma.review.findUnique({
