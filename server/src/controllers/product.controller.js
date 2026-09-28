@@ -57,27 +57,29 @@ export async function createProductController(req, res, next) {
     next(error);
   }
 }
+
 export async function updateProductController(req, res, next) {
   try {
-    const { isValid, errors } = validateUpdateProduct(req.body);
-
-    if (!isValid) {
-      return res.status(400).json({
-        success: false,
-        errors,
-      });
-    }
+    const body = updateProductSchema.parse(req.body);
 
     const product = await updateProduct(
       req.params.id,
-      req.body
+      body
     );
 
     res.status(200).json({
       success: true,
-      data: product,
+      message: "Product berhasil diperbarui.",
+      product,
     });
   } catch (error) {
+    if (error.message === "PRODUCT_SLUG_ALREADY_EXISTS") {
+      return res.status(409).json({
+        success: false,
+        message: "Slug product sudah digunakan.",
+      });
+    }
+
     next(error);
   }
 }
