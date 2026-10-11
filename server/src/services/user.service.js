@@ -19,6 +19,7 @@ export async function updateProfile(userId, data) {
   });
 }
 
+
 export async function getProfileByUsername(username) {
   return prisma.user.findUnique({
     where: {
@@ -32,16 +33,6 @@ export async function getProfileByUsername(username) {
       bio: true,
       avatar: true,
       role: true,
-      posts: {
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-        },
-      },
     },
   });
 }
