@@ -115,6 +115,7 @@ export async function updateCategoryController(req, res, next) {
   }
 }
 
+
 export async function deleteCategoryController(req, res, next) {
   try {
     const category = await getCategoryById(req.params.id);
@@ -128,11 +129,20 @@ export async function deleteCategoryController(req, res, next) {
 
     await deleteCategory(req.params.id);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Category berhasil dihapus.",
     });
   } catch (error) {
+    // Kategori masih digunakan oleh produk.
+    if (error.code === "P2003" || error.code === "P2014") {
+      return res.status(409).json({
+        success: false,
+        message:
+          "Category tidak dapat dihapus karena masih digunakan oleh produk.",
+      });
+    }
+
     next(error);
   }
 }
