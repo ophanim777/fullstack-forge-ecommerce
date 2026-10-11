@@ -101,7 +101,7 @@ export async function updateProductController(req, res, next) {
       message: "Product berhasil diperbarui.",
       product,
     });
-  } catch (error) {
+    } catch (error) {
     if (error.message === "PRODUCT_SLUG_ALREADY_EXISTS") {
       return res.status(409).json({
         success: false,
@@ -109,9 +109,16 @@ export async function updateProductController(req, res, next) {
       });
     }
 
+    if (error.message === "PRODUCT_CATEGORY_NOT_FOUND") {
+      return res.status(400).json({
+        success: false,
+        message: "Kategori produk tidak ditemukan.",
+      });
+    }
+
     next(error);
+    }
   }
-}
 
 export async function deleteProductController(req, res, next) {
   try {
