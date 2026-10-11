@@ -462,7 +462,7 @@ async function loadFollowing() {
 
               <div>
                 <span className="font-bold">
-                  {user.posts.length}
+                  0
                 </span>{" "}
                 Posts
               </div>
@@ -592,30 +592,9 @@ async function loadFollowing() {
             Posts
           </h2>
 
-          {user.posts.length === 0 ? (
-            <div className="bg-white rounded-xl shadow p-6 text-center text-gray-500">
-              Belum ada post.
-            </div>
-          ) : (
-            user.posts.map((post) => (
-              <div
-                key={post.id}
-                className="bg-white rounded-xl shadow p-5"
-              >
-
-                <p className="text-gray-800 whitespace-pre-wrap">
-                  {post.content}
-                </p>
-
-                <p className="text-sm text-gray-400 mt-3">
-                  {new Date(
-                    post.createdAt
-                  ).toLocaleString()}
-                </p>
-
-              </div>
-            ))
-          )}
+          <div className="bg-white rounded-xl shadow p-6 text-center text-gray-500">
+            Fitur posting tidak tersedia pada versi ecommerce.
+          </div>
 
         </div>
 
