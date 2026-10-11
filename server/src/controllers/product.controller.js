@@ -76,13 +76,17 @@ export async function createProductController(req, res, next) {
 }
 
 export async function updateProductController(req, res, next) {
-  try {
-    const body = updateProductSchema.parse(req.body);
+  const validation = validateUpdateProduct(req.body);
 
-    const product = await updateProduct(
-      req.params.id,
-      body
-    );
+  if (!validation.isValid) {
+    return res.status(400).json({
+      success: false,
+      errors: validation.errors,
+    });
+  }
+
+  try {
+    const product = await updateProduct(req.params.id, req.body);
 
     res.status(200).json({
       success: true,
