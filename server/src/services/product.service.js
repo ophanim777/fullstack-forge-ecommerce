@@ -56,6 +56,13 @@ export async function createProduct(data) {
       throw new Error("PRODUCT_CATEGORY_NOT_FOUND");
     }
 
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      throw new Error("PRODUCT_NOT_FOUND");
+    }
+
     throw error;
   }
 }
