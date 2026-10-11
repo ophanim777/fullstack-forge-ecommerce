@@ -46,10 +46,17 @@ export async function getProductByIdController(req, res, next) {
 }
 
 export async function createProductController(req, res, next) {
-  try {
-    const body = createProductSchema.parse(req.body);
+  const validation = validateCreateProduct(req.body);
 
-    const product = await createProduct(body);
+  if (!validation.isValid) {
+    return res.status(400).json({
+      success: false,
+      errors: validation.errors,
+    });
+  }
+
+  try {
+    const product = await createProduct(req.body);
 
     res.status(201).json({
       success: true,
