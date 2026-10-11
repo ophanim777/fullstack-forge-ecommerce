@@ -92,11 +92,19 @@ export async function updateProduct(id, data) {
       },
     });
   } catch (error) {
+    
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
       throw new Error("PRODUCT_SLUG_ALREADY_EXISTS");
+    }
+
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2003"
+    ) {
+      throw new Error("PRODUCT_CATEGORY_NOT_FOUND");
     }
 
     throw error;
