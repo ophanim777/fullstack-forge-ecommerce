@@ -1,5 +1,15 @@
-import { getProducts, createProduct, getProductById, updateProduct, deleteProduct, } from "../services/product.service.js";
-import { validateCreateProduct, validateUpdateProduct, createProductSchema, updateProductSchema, } from "../validators/product.validator.js";
+import {
+  getProducts,
+  createProduct,
+  getProductById,
+  updateProduct,
+  deleteProduct,
+} from "../services/product.service.js";
+
+import {
+  validateCreateProduct,
+  validateUpdateProduct,
+} from "../validators/product.validator.js";
 
 
 export async function getProductsController(req, res, next) {
