@@ -1,11 +1,12 @@
+
 import api from "../api/axios";
 
 export const getProducts = async () => {
   const response = await api.get("/products");
-  return response.data;
+  return response.data.data;
 };
 
 export const getProductById = async (id) => {
   const response = await api.get(`/products/${id}`);
-  return response.data;
+  return response.data.data;
 };
