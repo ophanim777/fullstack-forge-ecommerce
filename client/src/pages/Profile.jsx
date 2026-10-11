@@ -1,23 +1,23 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate, } from "react-router-dom";
 
-import { getUserProfile, updateProfile, uploadAvatar, toggleFollow,
-  getFollowing, getFollowers, } from "../services/user.service";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import {
+  getUserProfile,
+  updateProfile,
+  uploadAvatar,
+} from "../services/user.service";
 import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
   const { username } = useParams();
-
-   const navigate = useNavigate();
-
   const { user: currentUser } = useAuth();
 
   const [user, setUser] = useState(null);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const [form, setForm] = useState({
     firstName: "",
@@ -25,104 +25,8 @@ export default function Profile() {
     bio: "",
   });
 
-  const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-
-  const [following, setFollowing] = useState(false);
-  const [followLoading, setFollowLoading] = useState(false);
-
-  const [followersCount, setFollowersCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
-
-  const [showFollowers, setShowFollowers] = useState(false);
-  const [showFollowing, setShowFollowing] = useState(false);
-
-  const [followers, setFollowers] = useState([]);
-  const [followingUsers, setFollowingUsers] = useState([]);
-
-  const [listLoading, setListLoading] = useState(false);
-
-  async function loadFollowers() {
-  if (!user) return;
-
-  try {
-    setListLoading(true);
-
-    const response = await getFollowers(user.id);
-
-    setFollowers(response.followers);
-    setShowFollowers(true);
-    setShowFollowing(false);
-  } catch (error) {
-    alert(
-      error.response?.data?.message ||
-        "Gagal mengambil daftar followers."
-    );
-  } finally {
-    setListLoading(false);
-  }
-}
-
-
-async function loadFollowing() {
-  if (!user) return;
-
-  try {
-    setListLoading(true);
-
-    const response = await getFollowing(user.id);
-
-    setFollowingUsers(response.following);
-    setShowFollowing(true);
-    setShowFollowers(false);
-  } catch (error) {
-    alert(
-      error.response?.data?.message ||
-        "Gagal mengambil daftar following."
-    );
-  } finally {
-    setListLoading(false);
-  }
-}
-
-
-  async function loadFollowStatus(userId) {
-  if (!currentUser || currentUser.id === userId) {
-    return;
-  }
-
-  try {
-    const response = await getFollowing(currentUser.id);
-
-    const isFollowing = response.following.some(
-      (item) => item.following.id === userId
-    );
-
-    setFollowing(isFollowing);
-  } catch (error) {
-    console.error("Gagal mengecek status follow:", error);
-  }
-}
-
-
-  async function loadFollowCounts(userId) {
-  try {
-    const [followersResponse, followingResponse] =
-      await Promise.all([
-        getFollowers(userId),
-        getFollowing(userId),
-      ]);
-
-    setFollowersCount(followersResponse.count);
-    setFollowingCount(followingResponse.count);
-  } catch (error) {
-    console.error(
-      "Gagal mengambil jumlah followers/following:",
-      error
-    );
-  }
-}
-
+  const isOwnProfile =
+    currentUser?.username === user?.username;
 
   async function loadProfile() {
     try {
@@ -130,63 +34,36 @@ async function loadFollowing() {
       setError("");
 
       const response = await getUserProfile(username);
+      const profile = response.user;
 
-      setUser(response.user);
-
-      await loadFollowStatus(response.user.id);
-
-      await loadFollowCounts(response.user.id);
+      setUser(profile);
 
       setForm({
-        firstName: response.user.firstName || "",
-        lastName: response.user.lastName || "",
-        bio: response.user.bio || "",
+        firstName: profile.firstName || "",
+        lastName: profile.lastName || "",
+        bio: profile.bio || "",
       });
-
     } catch (error) {
       setError(
         error.response?.data?.message ||
-          "Gagal mengambil profile."
+          "Gagal mengambil data profil."
       );
     } finally {
       setLoading(false);
     }
   }
-  
- async function handleFollow() {
-  if (!user) return;
-
-  try {
-    setFollowLoading(true);
-
-    const response = await toggleFollow(user.id);
-
-    setFollowing(response.following);
-
-    if (response.following) {
-      setFollowersCount((prev) => prev + 1);
-    } else {
-      setFollowersCount((prev) => Math.max(0, prev - 1));
-    }
-  } catch (error) {
-    alert(
-      error.response?.data?.message ||
-        "Gagal mengubah status follow."
-    );
-  } finally {
-    setFollowLoading(false);
-  }
-}
 
   useEffect(() => {
     loadProfile();
   }, [username]);
 
   function handleChange(e) {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   }
 
   async function handleUpdateProfile(e) {
@@ -203,12 +80,11 @@ async function loadFollowing() {
       }));
 
       setEditing(false);
-
-      alert("Profile berhasil diperbarui.");
+      alert("Profil berhasil diperbarui.");
     } catch (error) {
       alert(
         error.response?.data?.message ||
-          "Gagal memperbarui profile."
+          "Gagal memperbarui profil."
       );
     } finally {
       setSaving(false);
@@ -216,7 +92,7 @@ async function loadFollowing() {
   }
 
   async function handleAvatarChange(e) {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
 
     if (!file) return;
 
@@ -234,76 +110,106 @@ async function loadFollowing() {
     } catch (error) {
       alert(
         error.response?.data?.message ||
-          "Gagal mengupload avatar."
+          "Gagal mengunggah avatar."
       );
     } finally {
       setUploading(false);
-
       e.target.value = "";
     }
   }
 
+  function getAvatarUrl(avatar) {
+    if (!avatar) return "";
+
+    if (avatar.startsWith("http")) {
+      return avatar;
+    }
+
+    return `http://localhost:5000${avatar}`;
+  }
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-100 flex justify-center items-center">
-        <p className="text-gray-500">
-          Memuat profile...
+      <main className="flex min-h-[60vh] items-center justify-center bg-slate-50 px-4">
+        <p className="text-slate-500">
+          Memuat profil...
         </p>
-      </div>
+      </main>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-100 flex justify-center items-center">
-        <p className="text-red-500">
+      <main className="flex min-h-[60vh] flex-col items-center justify-center gap-4 bg-slate-50 px-4">
+        <p className="text-center text-red-600">
           {error}
         </p>
-      </div>
+
+        <button
+          type="button"
+          onClick={loadProfile}
+          className="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700"
+        >
+          Coba Lagi
+        </button>
+      </main>
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
-  const isOwnProfile =
-    currentUser?.username === user.username;
+  if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-slate-100 py-8">
-      <div className="max-w-3xl mx-auto px-4">
+    <main className="min-h-screen bg-slate-50 py-8 sm:py-12">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+        {/* PAGE HEADER */}
+        <div className="mb-8">
+          <p className="text-sm font-medium text-indigo-600">
+            AKUN SAYA
+          </p>
+
+          <h1 className="mt-2 text-3xl font-bold text-slate-900">
+            Profil Pengguna
+          </h1>
+
+          <p className="mt-2 text-slate-500">
+            Kelola informasi akun dan preferensi profilmu.
+          </p>
+        </div>
 
         {/* PROFILE CARD */}
-        <div className="bg-white rounded-xl shadow p-6 mb-6">
+        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="h-28 bg-gradient-to-r from-indigo-600 to-violet-500" />
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+          <div className="px-5 pb-6 sm:px-8">
+            <div className="-mt-12 flex flex-col gap-5 sm:flex-row sm:items-end">
+              {/* AVATAR */}
+              <div className="relative h-24 w-24 shrink-0">
+                {user.avatar ? (
+                  <img
+                    src={getAvatarUrl(user.avatar)}
+                    alt={`Avatar ${user.username}`}
+                    className="h-24 w-24 rounded-full border-4 border-white bg-white object-cover shadow-sm"
+                  />
+                ) : (
+                  <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-indigo-100 text-3xl font-bold text-indigo-700 shadow-sm">
+                    {user.firstName?.charAt(0)?.toUpperCase() || "U"}
+                  </div>
+                )}
 
-            {/* AVATAR */}
-            <div className="relative">
-
-              {user.avatar ? (
-                <img
-                  src={`http://localhost:5000${user.avatar}`}
-                  alt={user.username}
-                  className="w-24 h-24 rounded-full object-cover border"
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center text-3xl">
-                  👤
-                </div>
-              )}
-
-              {/* UPLOAD AVATAR */}
-              {isOwnProfile && (
-                <>
+                {isOwnProfile && (
                   <label
                     htmlFor="avatar-upload"
-                    className="absolute bottom-0 right-0 bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700"
+                    title="Ubah avatar"
+                    className="absolute bottom-0 right-0 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-indigo-600 text-white hover:bg-indigo-700"
                   >
-                    📷
+                    <span aria-hidden="true">📷</span>
+                    <span className="sr-only">
+                      Ubah avatar
+                    </span>
                   </label>
+                )}
 
+                {isOwnProfile && (
                   <input
                     id="avatar-upload"
                     type="file"
@@ -312,293 +218,197 @@ async function loadFollowing() {
                     onChange={handleAvatarChange}
                     disabled={uploading}
                   />
-                </>
-              )}
-            </div>
-
-            {/* USER INFO */}
-            <div className="flex-1">
-
-              <h1 className="text-2xl font-bold">
-                {user.firstName} {user.lastName}
-              </h1>
-
-              <p className="text-gray-500">
-                @{user.username}
-              </p>
-
-              {user.bio && (
-                <p className="mt-2 text-gray-700">
-                  {user.bio}
-                </p>
-              )}
-
-
-              {uploading && (
-                <p className="text-sm text-blue-600 mt-2">
-                  Mengupload avatar...
-                </p>
-              )}
-
-            </div>
-
-            {/* EDIT BUTTON */}
-            {isOwnProfile && !editing && (
-              <button
-                onClick={() => setEditing(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-              >
-                ✏️ Edit Profile
-              </button>
-            )}
-
-            {!isOwnProfile && currentUser && (
-            <button
-              onClick={handleFollow}
-              disabled={followLoading}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-            >
-              {followLoading
-                ? "Loading..."
-                : following
-                ? "Unfollow"
-                : "Follow"}
-            </button>
-)}
-
-          </div>
-
-          {/* EDIT FORM */}
-          {editing && (
-            <form
-              onSubmit={handleUpdateProfile}
-              className="border-t mt-6 pt-6"
-            >
-
-              <h2 className="text-lg font-bold mb-4">
-                Edit Profile
-              </h2>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    First Name
-                  </label>
-
-                  <input
-                    name="firstName"
-                    value={form.firstName}
-                    onChange={handleChange}
-                    className="border rounded-lg w-full p-3"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Last Name
-                  </label>
-
-                  <input
-                    name="lastName"
-                    value={form.lastName}
-                    onChange={handleChange}
-                    className="border rounded-lg w-full p-3"
-                  />
-                </div>
-
+                )}
               </div>
 
-              <div className="mt-4">
+              {/* USER INFORMATION */}
+              <div className="min-w-0 flex-1 pt-2 sm:pb-1">
+                <h2 className="break-words text-2xl font-bold text-slate-900">
+                  {user.firstName} {user.lastName}
+                </h2>
 
-                <label className="block text-sm font-medium mb-1">
-                  Bio
-                </label>
-
-                <textarea
-                  name="bio"
-                  value={form.bio}
-                  onChange={handleChange}
-                  rows="3"
-                  className="border rounded-lg w-full p-3"
-                />
-
+                <p className="mt-1 text-slate-500">
+                  @{user.username}
+                </p>
               </div>
 
-              <div className="flex gap-2 mt-4">
-
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {saving ? "Menyimpan..." : "Simpan"}
-                </button>
-
+              {isOwnProfile && !editing && (
                 <button
                   type="button"
-                  onClick={() => {
-                    setEditing(false);
-
-                    setForm({
-                      firstName: user.firstName || "",
-                      lastName: user.lastName || "",
-                      bio: user.bio || "",
-                    });
-                  }}
-                  className="bg-gray-200 px-5 py-2 rounded-lg hover:bg-gray-300"
+                  onClick={() => setEditing(true)}
+                  className="rounded-lg border border-slate-300 px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-50"
                 >
-                  Batal
+                  Edit Profil
                 </button>
-
-              </div>
-
-            </form>
-          )}
-
-          {/* POST COUNT */}
-          <div className="border-t mt-5 pt-4">
-            <div className="flex gap-8 text-gray-600">
-
-              <div>
-                <span className="font-bold">
-                  0
-                </span>{" "}
-                Posts
-              </div>
-
-              <button
-                onClick={loadFollowers}
-                className="hover:text-blue-600"
-              >
-                <span className="font-bold">
-                  {followersCount}
-                </span>{" "}
-                Followers
-              </button>
-
-              <button
-                onClick={loadFollowing}
-                className="hover:text-blue-600"
-              >
-                <span className="font-bold">
-                  {followingCount}
-                </span>{" "}
-                Following
-              </button>
-
-
-            </div>
-          </div>
-
-        </div>
-
-          {/* FOLLOWERS / FOLLOWING LIST */}
-        {(showFollowers || showFollowing) && (
-          <div className="bg-white rounded-xl shadow p-6 mb-6">
-
-            <div className="flex justify-between items-center mb-4">
-
-              <h2 className="text-xl font-bold">
-                {showFollowers ? "Followers" : "Following"}
-              </h2>
-
-              <button
-                onClick={() => {
-                  setShowFollowers(false);
-                  setShowFollowing(false);
-                }}
-                className="text-gray-500 hover:text-gray-800"
-              >
-                ✕
-              </button>
-
+              )}
             </div>
 
-            {listLoading ? (
-              <p className="text-gray-500">
-                Memuat...
+            {uploading && (
+              <p className="mt-4 text-sm text-indigo-600">
+                Mengunggah avatar...
               </p>
-            ) : (
-              <div className="space-y-3">
-
-                {(showFollowers
-                  ? followers
-                  : followingUsers
-                ).length === 0 ? (
-                  <p className="text-gray-500">
-                    Belum ada user.
-                  </p>
-                ) : (
-                  (showFollowers
-                    ? followers
-                    : followingUsers
-                  ).map((item) => {
-
-                    const person =
-                      showFollowers
-                        ? item.follower
-                        : item.following;
-
-                    return (
-                      <div
-                        key={person.id}
-                        onClick={() => {
-                          setShowFollowers(false);
-                          setShowFollowing(false);
-                          navigate(`/profile/${person.username}`);
-                        }}
-                        className="flex items-center gap-3 border-b pb-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg"
-                      >
-
-                        {person.avatar ? (
-                          <img
-                            src={`http://localhost:5000${person.avatar}`}
-                            alt={person.username}
-                            className="w-10 h-10 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
-                            👤
-                          </div>
-                        )}
-
-                        <div>
-                          <p className="font-semibold hover:text-blue-600">
-                            {person.firstName} {person.lastName}
-                          </p>
-
-                          <p className="text-sm text-gray-500">
-                            @{person.username}
-                          </p>
-                        </div>
-
-                      </div>
-                    );
-                  })
-                )}
-
-              </div>
             )}
 
+            {/* BIO */}
+            <div className="mt-6 border-t border-slate-100 pt-5">
+              <h3 className="font-semibold text-slate-900">
+                Tentang Saya
+              </h3>
+
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-600">
+                {user.bio || "Belum ada bio."}
+              </p>
+            </div>
+
+            {/* EDIT FORM */}
+            {editing && isOwnProfile && (
+              <form
+                onSubmit={handleUpdateProfile}
+                className="mt-6 border-t border-slate-100 pt-6"
+              >
+                <h3 className="mb-5 text-lg font-bold text-slate-900">
+                  Edit Informasi Profil
+                </h3>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label
+                      htmlFor="firstName"
+                      className="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                      Nama Depan
+                    </label>
+
+                    <input
+                      id="firstName"
+                      name="firstName"
+                      value={form.firstName}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="lastName"
+                      className="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                      Nama Belakang
+                    </label>
+
+                    <input
+                      id="lastName"
+                      name="lastName"
+                      value={form.lastName}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <label
+                    htmlFor="bio"
+                    className="mb-1.5 block text-sm font-medium text-slate-700"
+                  >
+                    Bio
+                  </label>
+
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    value={form.bio}
+                    onChange={handleChange}
+                    rows={4}
+                    maxLength={500}
+                    placeholder="Ceritakan sedikit tentang dirimu..."
+                    className="w-full resize-y rounded-lg border border-slate-300 px-3 py-2.5 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  />
+
+                  <p className="mt-1 text-right text-xs text-slate-400">
+                    {form.bio.length}/500 karakter
+                  </p>
+                </div>
+
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {saving ? "Menyimpan..." : "Simpan Perubahan"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditing(false);
+                      setForm({
+                        firstName: user.firstName || "",
+                        lastName: user.lastName || "",
+                        bio: user.bio || "",
+                      });
+                    }}
+                    disabled={saving}
+                    className="rounded-lg bg-slate-100 px-5 py-2.5 font-medium text-slate-700 transition hover:bg-slate-200 disabled:opacity-60"
+                  >
+                    Batal
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
-        )}
+        </section>
 
-
-        {/* POSTS */}
-        <div className="space-y-4">
-
-          <h2 className="text-xl font-bold">
-            Posts
+        {/* ACCOUNT INFORMATION */}
+        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <h2 className="text-lg font-bold text-slate-900">
+            Informasi Akun
           </h2>
 
-          <div className="bg-white rounded-xl shadow p-6 text-center text-gray-500">
-            Fitur posting tidak tersedia pada versi ecommerce.
+          <div className="mt-4 divide-y divide-slate-100">
+            <div className="flex flex-wrap justify-between gap-2 py-3">
+              <span className="text-sm text-slate-500">
+                Username
+              </span>
+              <span className="text-sm font-medium text-slate-800">
+                @{user.username}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap justify-between gap-2 py-3">
+              <span className="text-sm text-slate-500">
+                Tipe Akun
+              </span>
+              <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                {user.role === "ADMIN" ? "Administrator" : "Pelanggan"}
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* STORE LINK */}
+        <section className="mt-6 flex flex-col gap-4 rounded-2xl bg-indigo-50 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div>
+            <h2 className="font-bold text-slate-900">
+              Temukan Produk Favoritmu
+            </h2>
+
+            <p className="mt-1 text-sm text-slate-600">
+              Jelajahi katalog dan temukan produk yang kamu butuhkan.
+            </p>
           </div>
 
-        </div>
-
+          <Link
+            to="/products"
+            className="inline-flex shrink-0 items-center justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-center font-medium text-white transition hover:bg-indigo-700"
+          >
+            Lihat Produk
+          </Link>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
