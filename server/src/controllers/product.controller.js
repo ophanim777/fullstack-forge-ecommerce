@@ -11,12 +11,11 @@ import {
   validateUpdateProduct,
 } from "../validators/product.validator.js";
 
-
 export async function getProductsController(req, res, next) {
   try {
     const products = await getProducts();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: products,
     });
@@ -32,11 +31,11 @@ export async function getProductByIdController(req, res, next) {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product tidak ditemukan.",
+        message: "Produk tidak ditemukan.",
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: product,
     });
@@ -58,31 +57,30 @@ export async function createProductController(req, res, next) {
   try {
     const product = await createProduct(req.body);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      message: "Product berhasil dibuat.",
+      message: "Produk berhasil dibuat.",
       product,
     });
-
-    } catch (error) {
-      if (error.message === "PRODUCT_SLUG_ALREADY_EXISTS") {
-        return res.status(409).json({
-          success: false,
-          message: "Slug product sudah digunakan.",
-        });
-      }
-
-      if (error.message === "PRODUCT_CATEGORY_NOT_FOUND") {
-        return res.status(400).json({
-          success: false,
-          message: "Kategori produk tidak ditemukan.",
-        });
-      }
-
-      next(error);
+  } catch (error) {
+    if (error.message === "PRODUCT_SLUG_ALREADY_EXISTS") {
+      return res.status(409).json({
+        success: false,
+        message: "Slug produk sudah digunakan.",
+      });
     }
+
+    if (error.message === "PRODUCT_CATEGORY_NOT_FOUND") {
+      return res.status(400).json({
+        success: false,
+        message: "Kategori produk tidak ditemukan.",
+      });
+    }
+
+    return next(error);
   }
-  
+}
+
 export async function updateProductController(req, res, next) {
   const validation = validateUpdateProduct(req.body);
 
@@ -96,16 +94,16 @@ export async function updateProductController(req, res, next) {
   try {
     const product = await updateProduct(req.params.id, req.body);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Product berhasil diperbarui.",
+      message: "Produk berhasil diperbarui.",
       product,
     });
-    } catch (error) {
+  } catch (error) {
     if (error.message === "PRODUCT_SLUG_ALREADY_EXISTS") {
       return res.status(409).json({
         success: false,
-        message: "Slug product sudah digunakan.",
+        message: "Slug produk sudah digunakan.",
       });
     }
 
@@ -123,9 +121,9 @@ export async function updateProductController(req, res, next) {
       });
     }
 
-    next(error);
-    }
+    return next(error);
   }
+}
 
 export async function deleteProductController(req, res, next) {
   try {
@@ -134,17 +132,17 @@ export async function deleteProductController(req, res, next) {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product tidak ditemukan.",
+        message: "Produk tidak ditemukan.",
       });
     }
 
     await deleteProduct(req.params.id);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Product berhasil dihapus.",
+      message: "Produk berhasil dihapus.",
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
