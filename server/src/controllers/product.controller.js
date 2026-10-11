@@ -116,6 +116,13 @@ export async function updateProductController(req, res, next) {
       });
     }
 
+    if (error.message === "PRODUCT_NOT_FOUND") {
+      return res.status(404).json({
+        success: false,
+        message: "Produk tidak ditemukan.",
+      });
+    }
+
     next(error);
     }
   }
