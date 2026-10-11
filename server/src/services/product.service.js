@@ -49,6 +49,13 @@ export async function createProduct(data) {
       throw new Error("PRODUCT_SLUG_ALREADY_EXISTS");
     }
 
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2003"
+    ) {
+      throw new Error("PRODUCT_CATEGORY_NOT_FOUND");
+    }
+
     throw error;
   }
 }
