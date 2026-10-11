@@ -63,18 +63,26 @@ export async function createProductController(req, res, next) {
       message: "Product berhasil dibuat.",
       product,
     });
-  } catch (error) {
-    if (error.message === "PRODUCT_SLUG_ALREADY_EXISTS") {
-      return res.status(409).json({
-        success: false,
-        message: "Slug product sudah digunakan.",
-      });
+
+    } catch (error) {
+      if (error.message === "PRODUCT_SLUG_ALREADY_EXISTS") {
+        return res.status(409).json({
+          success: false,
+          message: "Slug product sudah digunakan.",
+        });
+      }
+
+      if (error.message === "PRODUCT_CATEGORY_NOT_FOUND") {
+        return res.status(400).json({
+          success: false,
+          message: "Kategori produk tidak ditemukan.",
+        });
+      }
+
+      next(error);
     }
-
-    next(error);
   }
-}
-
+  
 export async function updateProductController(req, res, next) {
   const validation = validateUpdateProduct(req.body);
 
