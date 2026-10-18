@@ -161,3 +161,77 @@ export async function updateOrderStatus(orderId, status) {
     },
   });
 }
+
+export async function cancelOrder(userId, orderId) {
+  return prisma.$transaction(async (tx) => {
+    // Pastikan pesanan ada dan merupakan milik pengguna.
+    const order = await tx.order.findFirst({
+      where: {
+        id: orderId,
+        userId,
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!order) {
+      throw new Error("ORDER_NOT_FOUND");
+    }
+
+    // Pengguna hanya boleh membatalkan pesanan PENDING.
+    if (order.status !== "PENDING") {
+      throw new Error("ORDER_NOT_CANCELLABLE");
+    }
+
+    // Ubah status hanya jika pesanan masih PENDING.
+    // Ini membantu mencegah pengembalian stok ganda.
+    const result = await tx.order.updateMany({
+      where: {
+        id: orderId,
+        userId,
+        status: "PENDING",
+      },
+      data: {
+        status: "CANCELLED",
+      },
+    });
+
+    if (result.count !== 1) {
+      throw new Error("ORDER_NOT_CANCELLABLE");
+    }
+
+    // Kembalikan stok setiap produk.
+    for (const item of order.items) {
+      await tx.product.update({
+        where: {
+          id: item.productId,
+        },
+        data: {
+          stock: {
+            increment: item.quantity,
+          },
+        },
+      });
+    }
+
+    // Ambil pesanan terbaru untuk dikirim ke frontend.
+    return tx.order.findUnique({
+      where: {
+        id: orderId,
+      },
+      include: {
+        items: {
+          include: {
+            product: {
+              include: {
+                category: true,
+                images: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+}
