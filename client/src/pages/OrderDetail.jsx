@@ -66,7 +66,12 @@ export default function OrderDetail() {
 
     loadOrder();
 
-    async function handleCancelOrder() {
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  async function handleCancelOrder() {
   const confirmed = window.confirm(
     "Apakah kamu yakin ingin membatalkan pesanan ini?"
   );
@@ -95,11 +100,6 @@ export default function OrderDetail() {
     setCancelLoading(false);
   }
 }
-
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
 
   return (
     <MainLayout>
