@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
+import Orders from "./pages/Orders";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Feed from "./pages/Feed";
@@ -33,6 +34,15 @@ function App() {
         />
 
         <Route path="/cart" element={<Cart />} />
+
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/login" element={<Login />} />
 
