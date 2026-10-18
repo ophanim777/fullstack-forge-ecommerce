@@ -34,6 +34,8 @@ export default function OrderDetail() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     let cancelled = false;
