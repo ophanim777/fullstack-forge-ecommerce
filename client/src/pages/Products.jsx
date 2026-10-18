@@ -62,29 +62,26 @@ export default function Products() {
         },
       }));
     } catch (err) {
-      const status = err.response?.status;
+          console.error("Gagal menambahkan ke keranjang:", err);
+          console.error("HTTP status:", err.response?.status);
+          console.error("Response backend:", err.response?.data);
 
-      let message =
-        err.response?.data?.message ??
-        "Gagal menambahkan produk ke keranjang.";
+          const message =
+            err.response?.data?.message ??
+            err.message ??
+            "Gagal menambahkan produk ke keranjang.";
 
-      if (status === 401) {
-        message = "Silakan login terlebih dahulu untuk membeli produk.";
-      } else if (status === 403) {
-        message = "Kamu tidak memiliki akses untuk melakukan tindakan ini.";
-      }
-
-      setCartMessages((prev) => ({
-        ...prev,
-        [product.id]: {
-          type: "error",
-          text: message,
-        },
-      }));
-    } finally {
-      setAddingProductId(null);
-    }
-  }
+          setCartMessages((prev) => ({
+            ...prev,
+            [product.id]: {
+              type: "error",
+              text: message,
+            },
+          }));
+        } finally {
+          setAddingProductId(null);
+        }
+          }
 
   return (
     <MainLayout>
