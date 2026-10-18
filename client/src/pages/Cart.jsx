@@ -1,6 +1,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { createOrder } from "../services/order.service";
 import MainLayout from "../layouts/MainLayout";
 import {
   getCart,
@@ -21,6 +22,8 @@ export default function Cart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [busyItemId, setBusyItemId] = useState(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [success, setSuccess] = useState("");
 
   const loadCart = useCallback(async () => {
     try {
