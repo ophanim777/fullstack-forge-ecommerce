@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Feed from "./pages/Feed";
@@ -30,6 +31,8 @@ function App() {
           path="/products/:id"
           element={<ProductDetail />}
         />
+
+        <Route path="/cart" element={<Cart />} />
 
         <Route path="/login" element={<Login />} />
 
