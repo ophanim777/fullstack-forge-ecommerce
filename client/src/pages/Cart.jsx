@@ -55,8 +55,8 @@ export default function Cart() {
       setBusyItemId(item.id);
       setError("");
 
-      const updatedCart = await updateCartItem(item.id, quantity);
-      setCart(updatedCart);
+      await updateCartItem(item.id, quantity);
+      await loadCart();
     } catch (err) {
       setError(
         err.response?.data?.message ??
