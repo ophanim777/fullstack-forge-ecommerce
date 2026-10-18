@@ -144,6 +144,15 @@ async function handleCheckout() {
           </p>
         )}
 
+        {success && (
+        <p
+            role="status"
+            className="mt-6 rounded-lg bg-green-100 p-4 text-green-700"
+        >
+            {success}
+        </p>
+        )}
+
         {!loading && !error && items.length === 0 && (
           <div className="mt-6 rounded-xl border bg-white p-8 text-center">
             <p className="text-lg font-semibold text-slate-800">
