@@ -95,7 +95,7 @@ export default function Orders() {
         {!loading && !error && orders.length > 0 && (
           <div className="mt-6 space-y-5">
             {orders.map((order) => (
-              <article
+              <Link
                 key={order.id}
                 className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
               >
@@ -158,7 +158,7 @@ export default function Orders() {
                     {formatRupiah(order.total)}
                   </span>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}
