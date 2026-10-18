@@ -40,6 +40,10 @@ export default function Navbar() {
 
           {user && (
             <>
+              <NavLink to="/cart" className={navLinkClass}>
+                🛒 Keranjang
+              </NavLink>
+
               <NavLink
                 to={`/profile/${user.username}`}
                 className={navLinkClass}
