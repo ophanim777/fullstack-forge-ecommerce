@@ -130,6 +130,15 @@ export default function OrderDetail() {
           </div>
         )}
 
+        {success && (
+            <div
+                role="status"
+                className="mt-4 rounded-lg bg-green-100 p-4 text-green-700"
+            >
+                {success}
+            </div>
+            )}
+
         {!loading && !error && order && (
           <div className="mt-6 space-y-5">
             <div className="rounded-xl border bg-white p-5">
