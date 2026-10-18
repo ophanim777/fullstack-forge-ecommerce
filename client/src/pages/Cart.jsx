@@ -272,14 +272,16 @@ async function handleCheckout() {
                 Biaya pengiriman belum termasuk.
               </p>
 
-              <button
-                type="button"
-                disabled
-                className="mt-5 w-full cursor-not-allowed rounded-lg bg-slate-300 px-4 py-3 font-semibold text-slate-600"
-                title="Checkout akan dibuat pada tahap berikutnya"
-              >
-                Checkout — Segera Hadir
-              </button>
+              
+            <button
+            type="button"
+            onClick={handleCheckout}
+            disabled={checkoutLoading || items.length === 0}
+            className="mt-5 w-full rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600"
+            >
+            {checkoutLoading ? "Memproses Checkout..." : "Checkout"}
+            </button>
+
             </div>
           </div>
         )}
