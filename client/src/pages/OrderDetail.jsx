@@ -66,6 +66,36 @@ export default function OrderDetail() {
 
     loadOrder();
 
+    async function handleCancelOrder() {
+  const confirmed = window.confirm(
+    "Apakah kamu yakin ingin membatalkan pesanan ini?"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    setCancelLoading(true);
+    setError("");
+    setSuccess("");
+
+    const response = await api.patch(
+      `/orders/${id}/cancel`
+    );
+
+    setOrder(response.data.data);
+    setSuccess("Pesanan berhasil dibatalkan. Stok produk telah dikembalikan.");
+  } catch (err) {
+    setError(
+      err.response?.data?.message ??
+        "Gagal membatalkan pesanan."
+    );
+  } finally {
+    setCancelLoading(false);
+  }
+}
+
     return () => {
       cancelled = true;
     };
