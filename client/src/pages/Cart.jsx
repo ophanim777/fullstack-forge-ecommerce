@@ -87,6 +87,31 @@ export default function Cart() {
     }
   }
 
+  
+async function handleCheckout() {
+  try {
+    setCheckoutLoading(true);
+    setError("");
+    setSuccess("");
+
+    const order = await createOrder();
+
+    setSuccess(
+      `Checkout berhasil! Nomor pesanan: ${order.id}`
+    );
+
+    await loadCart();
+  } catch (err) {
+    setError(
+      err.response?.data?.message ??
+        "Checkout gagal. Silakan coba lagi."
+    );
+  } finally {
+    setCheckoutLoading(false);
+  }
+}
+
+
   const items = cart?.items ?? [];
 
   const total = items.reduce((sum, item) => {
