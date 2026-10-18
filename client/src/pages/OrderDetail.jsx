@@ -165,6 +165,20 @@ export default function OrderDetail() {
               <span className="mt-2 inline-block rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-700">
                 {statusLabels[order.status] ?? order.status}
               </span>
+              {order.status === "PENDING" && (
+                <div className="mt-5">
+                    <button
+                    type="button"
+                    onClick={handleCancelOrder}
+                    disabled={cancelLoading}
+                    className="rounded-lg bg-red-600 px-4 py-2 font-medium text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                    {cancelLoading
+                        ? "Membatalkan Pesanan..."
+                        : "Batalkan Pesanan"}
+                    </button>
+                </div>
+                )}
             </div>
 
             <div className="rounded-xl border bg-white p-5">
