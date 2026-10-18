@@ -1,22 +1,47 @@
-export function validateAddCartItem(data) {
-  const errors = {};
 
-  if (!data.productId || typeof data.productId !== "string") {
-    errors.productId = "Product ID is required";
+function validateBody(data) {
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    return {
+      isValid: false,
+      errors: {
+        body: "Request body harus berupa object.",
+      },
+    };
+  }
+
+  return null;
+}
+
+function validateQuantity(quantity, errors, required = true) {
+  if (quantity === undefined && !required) {
+    return;
   }
 
   if (
-    data.quantity === undefined ||
-    data.quantity === null ||
-    data.quantity === ""
+    !Number.isSafeInteger(Number(quantity)) ||
+    quantity === null ||
+    (typeof quantity === "string" && quantity.trim() === "") ||
+    Number(quantity) < 1
   ) {
-    errors.quantity = "Quantity is required";
-  } else if (
-    !Number.isInteger(Number(data.quantity)) ||
-    Number(data.quantity) < 1
-  ) {
-    errors.quantity = "Quantity must be a positive integer";
+    errors.quantity = "Jumlah produk harus berupa bilangan bulat minimal 1.";
   }
+}
+
+export function validateAddCartItem(data) {
+  const bodyError = validateBody(data);
+
+  if (bodyError) return bodyError;
+
+  const errors = {};
+
+  if (
+    typeof data.productId !== "string" ||
+    data.productId.trim().length === 0
+  ) {
+    errors.productId = "Product ID wajib diisi.";
+  }
+
+  validateQuantity(data.quantity, errors, false);
 
   return {
     isValid: Object.keys(errors).length === 0,
@@ -25,20 +50,13 @@ export function validateAddCartItem(data) {
 }
 
 export function validateUpdateCartItem(data) {
+  const bodyError = validateBody(data);
+
+  if (bodyError) return bodyError;
+
   const errors = {};
 
-  if (
-    data.quantity === undefined ||
-    data.quantity === null ||
-    data.quantity === ""
-  ) {
-    errors.quantity = "Quantity is required";
-  } else if (
-    !Number.isInteger(Number(data.quantity)) ||
-    Number(data.quantity) < 1
-  ) {
-    errors.quantity = "Quantity must be a positive integer";
-  }
+  validateQuantity(data.quantity, errors, true);
 
   return {
     isValid: Object.keys(errors).length === 0,
