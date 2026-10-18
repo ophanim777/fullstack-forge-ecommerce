@@ -1,18 +1,22 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { getProducts } from "../services/product.service";
+import { addCartItem } from "../services/cart.service";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [addingProductId, setAddingProductId] = useState(null);
+  const [cartMessages, setCartMessages] = useState({});
 
   useEffect(() => {
     async function fetchProducts() {
       try {
         const data = await getProducts();
-          setProducts(data);
+        setProducts(data);
       } catch (err) {
         setError(
           err.response?.data?.message ??
@@ -26,6 +30,62 @@ export default function Products() {
     fetchProducts();
   }, []);
 
+  async function handleAddToCart(product) {
+    if (product.stock <= 0) {
+      setCartMessages((prev) => ({
+        ...prev,
+        [product.id]: {
+          type: "error",
+          text: "Maaf, produk sedang habis.",
+        },
+      }));
+      return;
+    }
+
+    setAddingProductId(product.id);
+    setCartMessages((prev) => ({
+      ...prev,
+      [product.id]: null,
+    }));
+
+    try {
+      await addCartItem({
+        productId: product.id,
+        quantity: 1,
+      });
+
+      setCartMessages((prev) => ({
+        ...prev,
+        [product.id]: {
+          type: "success",
+          text: "Produk berhasil ditambahkan ke keranjang.",
+        },
+      }));
+    } catch (err) {
+      const status = err.response?.status;
+
+      let message =
+        err.response?.data?.message ??
+        "Gagal menambahkan produk ke keranjang.";
+
+      if (status === 401) {
+        message = "Silakan login terlebih dahulu untuk membeli produk.";
+      } else if (status === 403) {
+        message = "Kamu tidak memiliki akses untuk melakukan tindakan ini.";
+      }
+
+      setCartMessages((prev) => ({
+        ...prev,
+        [product.id]: {
+          type: "error",
+          text: message,
+        },
+      }));
+    } finally {
+      setAddingProductId(null);
+    }
+  }
+
   return (
     <MainLayout>
       <section>
@@ -38,7 +98,9 @@ export default function Products() {
         </p>
 
         {loading && (
-          <p className="mt-6 text-slate-600">Memuat produk...</p>
+          <p className="mt-6 text-slate-600">
+            Memuat produk...
+          </p>
         )}
 
         {error && (
@@ -91,6 +153,35 @@ export default function Products() {
                   >
                     Lihat Detail
                   </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => handleAddToCart(product)}
+                    disabled={
+                      product.stock <= 0 ||
+                      addingProductId === product.id
+                    }
+                    className="mt-2 w-full rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+                  >
+                    {addingProductId === product.id
+                      ? "Menambahkan..."
+                      : product.stock <= 0
+                        ? "Stok Habis"
+                        : "Tambah ke Keranjang"}
+                  </button>
+
+                  {cartMessages[product.id] && (
+                    <p
+                      role="status"
+                      className={`mt-2 text-sm ${
+                        cartMessages[product.id].type === "success"
+                          ? "text-emerald-700"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {cartMessages[product.id].text}
+                    </p>
+                  )}
                 </div>
               </article>
             ))}
