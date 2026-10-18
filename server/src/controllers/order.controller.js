@@ -3,6 +3,7 @@ import {
   getOrderById,
   createOrder,
   updateOrderStatus,
+  cancelOrder,
 } from "../services/order.service.js";
 
 export async function getOrdersController(req, res, next) {
@@ -121,5 +122,37 @@ export async function updateOrderStatusController(req, res, next) {
     }
 
     next(error);
+  }
+}
+
+export async function cancelOrderController(req, res, next) {
+  try {
+    const order = await cancelOrder(
+      req.user.id,
+      req.params.id
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Pesanan berhasil dibatalkan.",
+      data: order,
+    });
+  } catch (error) {
+    if (error.message === "ORDER_NOT_FOUND") {
+      return res.status(404).json({
+        success: false,
+        message: "Pesanan tidak ditemukan.",
+      });
+    }
+
+    if (error.message === "ORDER_NOT_CANCELLABLE") {
+      return res.status(409).json({
+        success: false,
+        message:
+          "Pesanan tidak dapat dibatalkan karena statusnya bukan PENDING.",
+      });
+    }
+
+    return next(error);
   }
 }
