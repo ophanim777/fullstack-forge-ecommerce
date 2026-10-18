@@ -64,7 +64,10 @@ export default function Products() {
     } catch (err) {
           console.error("Gagal menambahkan ke keranjang:", err);
           console.error("HTTP status:", err.response?.status);
-          console.error("Response backend:", err.response?.data);
+          console.log(
+          "Response backend:",
+          JSON.stringify(err.response?.data, null, 2)
+        );
 
           const message =
             err.response?.data?.message ??
