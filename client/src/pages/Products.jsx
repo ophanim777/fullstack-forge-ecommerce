@@ -49,10 +49,7 @@ export default function Products() {
     }));
 
     try {
-      await addCartItem({
-        productId: product.id,
-        quantity: 1,
-      });
+      await addCartItem(product.id, 1);
 
       setCartMessages((prev) => ({
         ...prev,
