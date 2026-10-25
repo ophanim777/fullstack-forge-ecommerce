@@ -172,6 +172,45 @@ console.log("STATUS ORDER:", response.data.data?.status);
               <span className="mt-2 inline-block rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-700">
                 {statusLabels[order.status] ?? order.status}
               </span>
+
+              
+              <div className="mt-6 border-t border-slate-200 pt-5">
+                <h2 className="text-lg font-bold text-slate-900">
+                  Alamat Pengiriman
+                </h2>
+
+                {order.shippingName &&
+                order.shippingPhone &&
+                order.shippingAddress &&
+                order.shippingCity ? (
+                  <div className="mt-3 space-y-2 text-sm text-slate-700">
+                    <p>
+                      <span className="font-medium">Nama Penerima:</span>{" "}
+                      {order.shippingName}
+                    </p>
+
+                    <p>
+                      <span className="font-medium">Nomor Telepon:</span>{" "}
+                      {order.shippingPhone}
+                    </p>
+
+                    <p>
+                      <span className="font-medium">Alamat:</span>{" "}
+                      {order.shippingAddress}
+                    </p>
+
+                    <p>
+                      <span className="font-medium">Kota/Kabupaten:</span>{" "}
+                      {order.shippingCity}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="mt-3 text-sm text-slate-500">
+                    Informasi alamat pengiriman tidak tersedia untuk pesanan ini.
+                  </p>
+                )}
+              </div>
+
               
               {order.status === "PENDING" && (
                 <div className="mt-5">
