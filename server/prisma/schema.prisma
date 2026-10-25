@@ -30,8 +30,12 @@ model User {
   email    String @unique
   password String
 
-  avatar String?
-  bio    String?
+    avatar  String?
+    bio     String?
+
+    phone   String?
+    address String?
+    city    String?
 
   role UserRole @default(USER)
 
