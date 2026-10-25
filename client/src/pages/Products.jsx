@@ -167,6 +167,32 @@ export default function Products() {
             )}
           </div>
 
+          
+          <div className="mt-4">
+            <label
+              htmlFor="product-category"
+              className="mb-2 block text-sm font-medium text-slate-700"
+            >
+              Filter berdasarkan kategori
+            </label>
+
+            <select
+              id="product-category"
+              value={selectedCategory}
+              onChange={(event) => setSelectedCategory(event.target.value)}
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900"
+            >
+              <option value="all">Semua Kategori</option>
+
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+
           {!loading && !error && (
             <p className="mt-2 text-sm text-slate-500">
               Menampilkan {filteredProducts.length} dari {products.length} produk
