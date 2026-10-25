@@ -62,17 +62,26 @@ export default function Products() {
   fetchCategories();
 }, []);
 
-  const filteredProducts = useMemo(() => {
-    const keyword = searchTerm.trim().toLocaleLowerCase("id-ID");
+  
+    const filteredProducts = useMemo(() => {
+      const keyword = searchTerm.trim().toLocaleLowerCase("id-ID");
 
-    if (!keyword) return products;
+      return products.filter((product) => {
+        const matchesName = String(product.name ?? "")
+          .toLocaleLowerCase("id-ID")
+          .includes(keyword);
 
-    return products.filter((product) =>
-      String(product.name ?? "")
-        .toLocaleLowerCase("id-ID")
-        .includes(keyword)
-    );
-  }, [products, searchTerm]);
+        const productCategoryId =
+          product.categoryId ?? product.category?.id ?? "";
+
+        const matchesCategory =
+          selectedCategory === "all" ||
+          String(productCategoryId) === String(selectedCategory);
+
+        return matchesName && matchesCategory;
+      });
+    }, [products, searchTerm, selectedCategory]);
+
 
   async function handleAddToCart(product) {
     if (Number(product.stock) <= 0) {
