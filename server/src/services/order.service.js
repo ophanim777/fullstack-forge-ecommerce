@@ -44,7 +44,7 @@ export async function getOrderById(userId, orderId) {
   });
 }
 
-export async function createOrder(userId) {
+export async function createOrder(userId, shippingData) {
   return prisma.$transaction(async (tx) => {
     const cart = await tx.cart.findUnique({
       where: {
@@ -81,6 +81,10 @@ export async function createOrder(userId) {
       data: {
         userId,
         total,
+        shippingName: shippingData.shippingName,
+        shippingPhone: shippingData.shippingPhone,
+        shippingAddress: shippingData.shippingAddress,
+        shippingCity: shippingData.shippingCity,
         items: {
           create: cart.items.map((item) => ({
             productId: item.productId,
@@ -89,6 +93,7 @@ export async function createOrder(userId) {
           })),
         },
       },
+
       include: {
         items: {
           include: {
