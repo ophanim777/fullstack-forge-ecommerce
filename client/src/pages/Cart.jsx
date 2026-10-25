@@ -278,6 +278,82 @@ async function handleCheckout() {
               </p>
 
               
+              <div className="mt-6 space-y-4 border-t border-slate-200 pt-5">
+                <h3 className="text-lg font-semibold text-slate-900">
+                  Alamat Pengiriman
+                </h3>
+
+                <div>
+                  <label
+                    htmlFor="shippingName"
+                    className="mb-1 block text-sm font-medium text-slate-700"
+                  >
+                    Nama Penerima
+                  </label>
+                  <input
+                    id="shippingName"
+                    type="text"
+                    value={shippingName}
+                    onChange={(e) => setShippingName(e.target.value)}
+                    placeholder="Nama lengkap penerima"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="shippingPhone"
+                    className="mb-1 block text-sm font-medium text-slate-700"
+                  >
+                    Nomor Telepon
+                  </label>
+                  <input
+                    id="shippingPhone"
+                    type="tel"
+                    value={shippingPhone}
+                    onChange={(e) => setShippingPhone(e.target.value)}
+                    placeholder="Contoh: 081234567890"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="shippingAddress"
+                    className="mb-1 block text-sm font-medium text-slate-700"
+                  >
+                    Alamat Lengkap
+                  </label>
+                  <textarea
+                    id="shippingAddress"
+                    value={shippingAddress}
+                    onChange={(e) => setShippingAddress(e.target.value)}
+                    placeholder="Nama jalan, nomor rumah, kelurahan, dan kecamatan"
+                    rows={3}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="shippingCity"
+                    className="mb-1 block text-sm font-medium text-slate-700"
+                  >
+                    Kota / Kabupaten
+                  </label>
+                  <input
+                    id="shippingCity"
+                    type="text"
+                    value={shippingCity}
+                    onChange={(e) => setShippingCity(e.target.value)}
+                    placeholder="Contoh: Medan"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2"
+                  />
+                </div>
+              </div>
+
+
+              
             <button
             type="button"
             onClick={handleCheckout}
