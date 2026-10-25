@@ -2,15 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { getProducts } from "../services/product.service";
+import { getCategories } from "../services/category.service";
 import { addCartItem } from "../services/cart.service";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [addingProductId, setAddingProductId] = useState(null);
   const [cartMessages, setCartMessages] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   useEffect(() => {
     let cancelled = false;
