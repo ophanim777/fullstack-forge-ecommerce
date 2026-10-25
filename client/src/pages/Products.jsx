@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { getProducts } from "../services/product.service";
@@ -9,29 +8,58 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [addingProductId, setAddingProductId] = useState(null);
   const [cartMessages, setCartMessages] = useState({});
 
   useEffect(() => {
+    let cancelled = false;
+
     async function fetchProducts() {
       try {
+        setLoading(true);
+        setError("");
+
         const data = await getProducts();
-        setProducts(data);
+
+        if (!cancelled) {
+          setProducts(Array.isArray(data) ? data : []);
+        }
       } catch (err) {
-        setError(
-          err.response?.data?.message ??
-            "Gagal mengambil daftar produk. Silakan coba lagi."
-        );
+        if (!cancelled) {
+          setError(
+            err.response?.data?.message ??
+              "Gagal mengambil daftar produk. Silakan coba lagi."
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
     fetchProducts();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
+  const filteredProducts = useMemo(() => {
+    const keyword = searchTerm.trim().toLocaleLowerCase("id-ID");
+
+    if (!keyword) return products;
+
+    return products.filter((product) =>
+      String(product.name ?? "")
+        .toLocaleLowerCase("id-ID")
+        .includes(keyword)
+    );
+  }, [products, searchTerm]);
+
   async function handleAddToCart(product) {
-    if (product.stock <= 0) {
+    if (Number(product.stock) <= 0) {
       setCartMessages((prev) => ({
         ...prev,
         [product.id]: {
@@ -59,29 +87,29 @@ export default function Products() {
         },
       }));
     } catch (err) {
-          console.error("Gagal menambahkan ke keranjang:", err);
-          console.error("HTTP status:", err.response?.status);
-          console.log(
-          "Response backend:",
-          JSON.stringify(err.response?.data, null, 2)
-        );
+      console.error("Gagal menambahkan ke keranjang:", err);
+      console.error("HTTP status:", err.response?.status);
+      console.log(
+        "Response backend:",
+        JSON.stringify(err.response?.data, null, 2)
+      );
 
-          const message =
-            err.response?.data?.message ??
-            err.message ??
-            "Gagal menambahkan produk ke keranjang.";
+      const message =
+        err.response?.data?.message ??
+        err.message ??
+        "Gagal menambahkan produk ke keranjang.";
 
-          setCartMessages((prev) => ({
-            ...prev,
-            [product.id]: {
-              type: "error",
-              text: message,
-            },
-          }));
-        } finally {
-          setAddingProductId(null);
-        }
-          }
+      setCartMessages((prev) => ({
+        ...prev,
+        [product.id]: {
+          type: "error",
+          text: message,
+        },
+      }));
+    } finally {
+      setAddingProductId(null);
+    }
+  }
 
   return (
     <MainLayout>
@@ -94,14 +122,48 @@ export default function Products() {
           Temukan produk yang kamu butuhkan.
         </p>
 
+        <div className="mt-6">
+          <label
+            htmlFor="product-search"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Cari produk berdasarkan nama
+          </label>
+
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <input
+              id="product-search"
+              type="search"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Contoh: keyboard, mouse, monitor..."
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+            />
+
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm("")}
+                className="rounded-lg border border-slate-300 px-4 py-3 font-medium text-slate-700 hover:bg-slate-50"
+              >
+                Hapus pencarian
+              </button>
+            )}
+          </div>
+
+          {!loading && !error && (
+            <p className="mt-2 text-sm text-slate-500">
+              Menampilkan {filteredProducts.length} dari {products.length} produk
+            </p>
+          )}
+        </div>
+
         {loading && (
-          <p className="mt-6 text-slate-600">
-            Memuat produk...
-          </p>
+          <p className="mt-6 text-slate-600">Memuat produk...</p>
         )}
 
         {error && (
-          <p className="mt-6 rounded bg-red-100 p-4 text-red-700">
+          <p role="alert" className="mt-6 rounded bg-red-100 p-4 text-red-700">
             {error}
           </p>
         )}
@@ -112,9 +174,27 @@ export default function Products() {
           </p>
         )}
 
-        {!loading && !error && products.length > 0 && (
+        {!loading && !error && products.length > 0 && filteredProducts.length === 0 && (
+          <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 text-center">
+            <p className="font-medium text-slate-800">
+              Produk tidak ditemukan.
+            </p>
+            <p className="mt-2 text-sm text-slate-600">
+              Coba kata kunci lain atau hapus pencarian.
+            </p>
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              className="mt-4 rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700"
+            >
+              Tampilkan semua produk
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && filteredProducts.length > 0 && (
           <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <article
                 key={product.id}
                 className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
@@ -155,14 +235,14 @@ export default function Products() {
                     type="button"
                     onClick={() => handleAddToCart(product)}
                     disabled={
-                      product.stock <= 0 ||
+                      Number(product.stock) <= 0 ||
                       addingProductId === product.id
                     }
                     className="mt-2 w-full rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-400"
                   >
                     {addingProductId === product.id
                       ? "Menambahkan..."
-                      : product.stock <= 0
+                      : Number(product.stock) <= 0
                         ? "Stok Habis"
                         : "Tambah ke Keranjang"}
                   </button>
