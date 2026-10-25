@@ -128,17 +128,6 @@ setOrder(response.data.data);
           </p>
         )}
 
-        <p className="mt-4 rounded bg-yellow-100 p-3 text-black">
-  DEBUG: loading = {String(loading)}
-</p>
-
-<p className="mt-2 rounded bg-yellow-100 p-3 text-black">
-  DEBUG: error = {error || "(kosong)"}
-</p>
-
-<p className="mt-2 rounded bg-yellow-100 p-3 text-black">
-  DEBUG: order tersedia = {String(Boolean(order))}
-</p>
 
         {error && (
           <div
@@ -184,17 +173,7 @@ setOrder(response.data.data);
               <span className="mt-2 inline-block rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-700">
                 {statusLabels[order.status] ?? order.status}
               </span>
-              <p className="mt-2 text-sm text-red-600">
-  DEBUG STATUS: {JSON.stringify(order.status)}
-</p>
-
-<button
-  type="button"
-  onClick={() => alert(`Status: ${order.status}`)}
-  className="mt-3 rounded bg-blue-600 px-4 py-2 text-white"
->
-  TEST KLIK
-</button>
+              
               {order.status === "PENDING" && (
                 <div className="mt-5">
                     <button
