@@ -23,7 +23,12 @@ export default function Cart() {
   const [error, setError] = useState("");
   const [busyItemId, setBusyItemId] = useState(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [success, setSuccess] = useState("");
+  const [success, setSuccess] = useState("");  
+  const [shippingName, setShippingName] = useState("");
+  const [shippingPhone, setShippingPhone] = useState("");
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [shippingCity, setShippingCity] = useState("");
+
 
   const loadCart = useCallback(async () => {
     try {
