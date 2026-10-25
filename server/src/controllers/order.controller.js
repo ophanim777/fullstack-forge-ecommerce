@@ -42,9 +42,34 @@ export async function getOrderByIdController(req, res, next) {
   }
 }
 
+
 export async function createOrderController(req, res, next) {
   try {
-    const order = await createOrder(req.user.id);
+    const {
+      shippingName,
+      shippingPhone,
+      shippingAddress,
+      shippingCity,
+    } = req.body;
+
+    if (
+      !shippingName?.trim() ||
+      !shippingPhone?.trim() ||
+      !shippingAddress?.trim() ||
+      !shippingCity?.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Semua data alamat pengiriman wajib diisi.",
+      });
+    }
+
+    const order = await createOrder(req.user.id, {
+      shippingName: shippingName.trim(),
+      shippingPhone: shippingPhone.trim(),
+      shippingAddress: shippingAddress.trim(),
+      shippingCity: shippingCity.trim(),
+    });
 
     res.status(201).json({
       success: true,
@@ -75,6 +100,7 @@ export async function createOrderController(req, res, next) {
     next(error);
   }
 }
+
 
 
 export async function updateOrderStatusController(req, res, next) {
