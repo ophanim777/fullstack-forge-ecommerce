@@ -95,7 +95,6 @@ setOrder(response.data.data);
     console.log("DATA ORDER:", response.data.data);
 console.log("STATUS ORDER:", response.data.data?.status);
 
-setOrder(response.data.data);
     setOrder(response.data.data);
     setSuccess("Pesanan berhasil dibatalkan. Stok produk telah dikembalikan.");
   } catch (err) {
