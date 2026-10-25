@@ -49,6 +49,19 @@ export default function Products() {
     };
   }, []);
 
+  useEffect(() => {
+  async function fetchCategories() {
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch (err) {
+      console.error("Gagal mengambil kategori:", err);
+    }
+  }
+
+  fetchCategories();
+}, []);
+
   const filteredProducts = useMemo(() => {
     const keyword = searchTerm.trim().toLocaleLowerCase("id-ID");
 
