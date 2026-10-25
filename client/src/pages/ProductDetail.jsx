@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getProductById } from "../services/product.service";
@@ -40,7 +39,8 @@ function formatDate(value) {
 }
 
 function renderStars(rating) {
-  return "★".repeat(Number(rating)) + "☆".repeat(5 - Number(rating));
+  const value = Math.max(0, Math.min(5, Number(rating) || 0));
+  return "★".repeat(value) + "☆".repeat(5 - value);
 }
 
 export default function ProductDetail() {
@@ -92,18 +92,22 @@ export default function ProductDetail() {
 
         const data = await getProductById(id);
 
-        if (!cancelled) setProduct(data);
+        if (!cancelled) {
+          setProduct(data);
+        }
       } catch (err) {
         if (!cancelled) {
           setError(
             err.response?.status === 404
               ? "Produk tidak ditemukan."
               : err.response?.data?.message ??
-                "Gagal mengambil detail produk. Silakan coba lagi."
+                  "Gagal mengambil detail produk. Silakan coba lagi."
           );
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
@@ -138,7 +142,8 @@ export default function ProductDetail() {
       setCartMessage("Produk berhasil ditambahkan ke keranjang.");
     } catch (err) {
       setCartError(
-        err.response?.data?.message ?? "Gagal menambahkan produk ke keranjang."
+        err.response?.data?.message ??
+          "Gagal menambahkan produk ke keranjang."
       );
     } finally {
       setCartLoading(false);
@@ -171,6 +176,7 @@ export default function ProductDetail() {
     } catch (err) {
       const status = err.response?.status;
       const message = err.response?.data?.message;
+      const validationErrors = err.response?.data?.errors;
 
       if (status === 403) {
         setReviewError(
@@ -184,10 +190,12 @@ export default function ProductDetail() {
       } else if (status === 401) {
         setReviewError("Silakan login kembali untuk memberikan review.");
       } else {
+        const validationMessage = validationErrors
+          ? Object.values(validationErrors).join(" ")
+          : "";
+
         setReviewError(
-          message ??
-            Object.values(err.response?.data?.errors ?? {}).join(" ") ??
-            "Gagal mengirim review."
+          message || validationMessage || "Gagal mengirim review."
         );
       }
     } finally {
@@ -206,8 +214,14 @@ export default function ProductDetail() {
   if (error) {
     return (
       <main className="mx-auto max-w-5xl px-4 py-10">
-        <p role="alert" className="text-red-600">{error}</p>
-        <Link to="/products" className="mt-4 inline-block text-blue-700 hover:underline">
+        <p role="alert" className="text-red-600">
+          {error}
+        </p>
+
+        <Link
+          to="/products"
+          className="mt-4 inline-block text-blue-700 hover:underline"
+        >
           Kembali ke katalog
         </Link>
       </main>
@@ -222,9 +236,16 @@ export default function ProductDetail() {
       reviews.length
     : 0;
 
+  const userReview = user
+    ? reviews.find((review) => review.user?.id === user.id)
+    : null;
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
-      <Link to="/products" className="text-sm text-blue-700 hover:underline">
+      <Link
+        to="/products"
+        className="text-sm text-blue-700 hover:underline"
+      >
         &larr; Kembali ke katalog
       </Link>
 
@@ -237,7 +258,9 @@ export default function ProductDetail() {
               className="max-h-[500px] w-full object-contain"
             />
           ) : (
-            <span className="text-gray-400">Belum ada gambar produk</span>
+            <span className="text-gray-400">
+              Belum ada gambar produk
+            </span>
           )}
         </div>
 
@@ -276,6 +299,7 @@ export default function ProductDetail() {
               {cartMessage}
             </p>
           )}
+
           {cartError && (
             <p role="alert" className="mt-3 text-sm text-red-600">
               {cartError}
@@ -286,6 +310,7 @@ export default function ProductDetail() {
             <h2 className="text-lg font-semibold text-gray-900">
               Deskripsi produk
             </h2>
+
             <p className="mt-3 whitespace-pre-line leading-7 text-gray-700">
               {product.description || "Belum ada deskripsi produk."}
             </p>
@@ -303,9 +328,11 @@ export default function ProductDetail() {
             <span className="text-xl font-semibold">
               {averageRating.toFixed(1)}
             </span>
+
             <span className="ml-2 text-lg text-amber-500">
               {renderStars(Math.round(averageRating))}
             </span>
+
             <p className="mt-1 text-sm text-gray-500">
               {reviews.length} ulasan
             </p>
@@ -315,7 +342,9 @@ export default function ProductDetail() {
         {reviewsLoading ? (
           <p className="mt-5 text-gray-500">Memuat ulasan...</p>
         ) : reviewsError ? (
-          <p role="alert" className="mt-5 text-red-600">{reviewsError}</p>
+          <p role="alert" className="mt-5 text-red-600">
+            {reviewsError}
+          </p>
         ) : reviews.length === 0 ? (
           <p className="mt-5 text-gray-500">
             Belum ada ulasan untuk produk ini.
@@ -339,6 +368,7 @@ export default function ProductDetail() {
                     <p className="font-semibold text-gray-900">
                       {displayName}
                     </p>
+
                     <time className="text-sm text-gray-500">
                       {formatDate(review.createdAt)}
                     </time>
@@ -365,17 +395,35 @@ export default function ProductDetail() {
           {!user ? (
             <p className="mt-3 text-gray-600">
               Silakan{" "}
-              <Link to="/login" className="text-blue-700 hover:underline">
+              <Link
+                to="/login"
+                className="text-blue-700 hover:underline"
+              >
                 login
               </Link>{" "}
               untuk memberikan ulasan.
             </p>
+          ) : reviewsLoading ? (
+            <p className="mt-3 text-gray-500">
+              Memeriksa ulasan kamu...
+            </p>
+          ) : userReview ? (
+            <div className="mt-4 rounded-lg bg-green-50 p-4 text-green-800">
+              Kamu sudah memberikan ulasan untuk produk ini.
+            </div>
           ) : (
-            <form onSubmit={handleSubmitReview} className="mt-4 space-y-4">
+            <form
+              onSubmit={handleSubmitReview}
+              className="mt-4 space-y-4"
+            >
               <div>
-                <label htmlFor="review-rating" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="review-rating"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Rating
                 </label>
+
                 <select
                   id="review-rating"
                   value={rating}
@@ -391,9 +439,13 @@ export default function ProductDetail() {
               </div>
 
               <div>
-                <label htmlFor="review-comment" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="review-comment"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Komentar
                 </label>
+
                 <textarea
                   id="review-comment"
                   value={comment}
@@ -410,6 +462,7 @@ export default function ProductDetail() {
                   {reviewMessage}
                 </p>
               )}
+
               {reviewError && (
                 <p role="alert" className="text-sm text-red-600">
                   {reviewError}
