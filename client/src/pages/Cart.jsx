@@ -93,13 +93,30 @@ export default function Cart() {
   }
 
   
+
 async function handleCheckout() {
+  if (
+    !shippingName.trim() ||
+    !shippingPhone.trim() ||
+    !shippingAddress.trim() ||
+    !shippingCity.trim()
+  ) {
+    setError("Semua data alamat pengiriman wajib diisi.");
+    setSuccess("");
+    return;
+  }
+
   try {
     setCheckoutLoading(true);
     setError("");
     setSuccess("");
 
-    const order = await createOrder();
+    const order = await createOrder({
+      shippingName: shippingName.trim(),
+      shippingPhone: shippingPhone.trim(),
+      shippingAddress: shippingAddress.trim(),
+      shippingCity: shippingCity.trim(),
+    });
 
     setSuccess(
       `Checkout berhasil! Nomor pesanan: ${order.id}`
@@ -115,6 +132,7 @@ async function handleCheckout() {
     setCheckoutLoading(false);
   }
 }
+
 
 
   const items = cart?.items ?? [];
