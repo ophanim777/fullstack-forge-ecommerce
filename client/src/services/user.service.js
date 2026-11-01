@@ -8,6 +8,11 @@ export async function getUserProfile(username) {
   return response.data;
 }
 
+export async function getCurrentUser() {
+  const response = await api.get("/users/me");
+  return response.data;
+}
+
 export async function updateProfile(data) {
   const response = await api.put(
     "/users/profile",
