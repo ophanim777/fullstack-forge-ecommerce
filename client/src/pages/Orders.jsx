@@ -52,6 +52,13 @@ export default function Orders() {
     loadOrders();
   }, []);
 
+    const filteredOrders =
+  selectedStatus === "ALL"
+    ? orders
+    : orders.filter(
+        (order) => order.status === selectedStatus
+      );
+
   return (
     <MainLayout>
       <section>
