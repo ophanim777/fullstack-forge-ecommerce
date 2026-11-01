@@ -79,6 +79,15 @@ export default function Orders() {
         <p className="mt-2 text-slate-600">
           Lihat riwayat dan status pesanan kamu.
         </p>
+        <div className="mt-5">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Cari nomor pesanan atau nama produk..."
+          className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+        />
+      </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
           {[
