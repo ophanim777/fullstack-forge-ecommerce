@@ -429,6 +429,9 @@ export default function Profile() {
                       setForm({
                         firstName: user.firstName || "",
                         lastName: user.lastName || "",
+                        phone: user.phone || "",
+                        address: user.address || "",
+                        city: user.city || "",
                         bio: user.bio || "",
                       });
                     }}
