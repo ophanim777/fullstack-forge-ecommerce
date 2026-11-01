@@ -32,6 +32,7 @@ export default function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("ALL");
 
   useEffect(() => {
     async function loadOrders() {
