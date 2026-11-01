@@ -127,7 +127,7 @@ export default function Orders() {
 
         {!loading && !error && orders.length > 0 && (
           <div className="mt-6 space-y-5">
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <Link
                 key={order.id}
                 to={`/orders/${order.id}`}
