@@ -55,6 +55,10 @@ export default function Orders() {
     loadOrders();
   }, []);
 
+  useEffect(() => {
+  setCurrentPage(1);
+}, [selectedStatus, searchQuery]);
+
     const filteredOrders = orders.filter((order) => {
   const matchesStatus =
     selectedStatus === "ALL" ||
