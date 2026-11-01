@@ -280,6 +280,38 @@ export default function Profile() {
               </p>
             </div>
 
+            {/* SHIPPING INFORMATION */}
+            {isOwnProfile && (
+              <div className="mt-6 border-t border-slate-100 pt-5">
+                <h3 className="font-semibold text-slate-900">
+                  Informasi Pengiriman
+                </h3>
+
+                <div className="mt-3 space-y-3 text-sm">
+                  <div>
+                    <p className="text-slate-500">Nomor Telepon</p>
+                    <p className="font-medium text-slate-800">
+                      {user.phone || "Belum diisi"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-slate-500">Alamat Lengkap</p>
+                    <p className="whitespace-pre-wrap font-medium text-slate-800">
+                      {user.address || "Belum diisi"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-slate-500">Kota / Kabupaten</p>
+                    <p className="font-medium text-slate-800">
+                      {user.city || "Belum diisi"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* EDIT FORM */}
             {editing && isOwnProfile && (
               <form
