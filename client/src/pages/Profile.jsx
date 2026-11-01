@@ -33,32 +33,45 @@ export default function Profile() {
     currentUser?.username === user?.username;
 
   async function loadProfile() {
-    try {
-      setLoading(true);
-      setError("");
+  try {
+    setLoading(true);
+    setError("");
 
-      const response = await getUserProfile(username);
-      const profile = response.user;
+    const response = await getUserProfile(username);
+    let profile = response.user;
 
-      setUser(profile);
+    // Ambil informasi pribadi hanya untuk pemilik profil.
+    if (currentUser?.username === profile.username) {
+      const currentResponse = await getCurrentUser();
+      const privateUser = currentResponse.user;
 
-      setForm({
-          firstName: profile.firstName || "",
-          lastName: profile.lastName || "",
-          phone: profile.phone || "",
-          address: profile.address || "",
-          city: profile.city || "",
-          bio: profile.bio || "",
-        });
-    } catch (error) {
-      setError(
-        error.response?.data?.message ||
-          "Gagal mengambil data profil."
-      );
-    } finally {
-      setLoading(false);
+      profile = {
+        ...profile,
+        phone: privateUser.phone || "",
+        address: privateUser.address || "",
+        city: privateUser.city || "",
+      };
     }
+
+    setUser(profile);
+
+    setForm({
+      firstName: profile.firstName || "",
+      lastName: profile.lastName || "",
+      phone: profile.phone || "",
+      address: profile.address || "",
+      city: profile.city || "",
+      bio: profile.bio || "",
+    });
+  } catch (error) {
+    setError(
+      error.response?.data?.message ||
+        "Gagal mengambil data profil."
+    );
+  } finally {
+    setLoading(false);
   }
+}
 
   useEffect(() => {
     loadProfile();
