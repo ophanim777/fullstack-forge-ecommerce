@@ -53,12 +53,21 @@ export default function Orders() {
     loadOrders();
   }, []);
 
-    const filteredOrders =
-  selectedStatus === "ALL"
-    ? orders
-    : orders.filter(
-        (order) => order.status === selectedStatus
-      );
+    const filteredOrders = orders.filter((order) => {
+  const matchesStatus =
+    selectedStatus === "ALL" ||
+    order.status === selectedStatus;
+
+  const query = searchQuery.toLowerCase().trim();
+
+  const matchesSearch =
+    order.id.toLowerCase().includes(query) ||
+    order.items.some((item) =>
+      item.product.name.toLowerCase().includes(query)
+    );
+
+  return matchesStatus && matchesSearch;
+});
 
   return (
     <MainLayout>
