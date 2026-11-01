@@ -34,6 +34,8 @@ export default function Orders() {
   const [error, setError] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 5;
 
   useEffect(() => {
     async function loadOrders() {
