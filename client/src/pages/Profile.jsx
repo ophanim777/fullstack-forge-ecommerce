@@ -20,10 +20,13 @@ export default function Profile() {
   const [uploading, setUploading] = useState(false);
 
   const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    bio: "",
-  });
+  firstName: "",
+  lastName: "",
+  phone: "",
+  address: "",
+  city: "",
+  bio: "",
+});
 
   const isOwnProfile =
     currentUser?.username === user?.username;
