@@ -115,6 +115,49 @@ export default function Orders() {
         <p className="mt-2 text-slate-600">
           Lihat riwayat dan status pesanan kamu.
         </p>
+
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {[
+          {
+            label: "Total Pesanan",
+            value: orderStats.total,
+          },
+          {
+            label: "Menunggu Pembayaran",
+            value: orderStats.pending,
+          },
+          {
+            label: "Sedang Diproses",
+            value: orderStats.processing,
+          },
+          {
+            label: "Dalam Pengiriman",
+            value: orderStats.shipped,
+          },
+          {
+            label: "Pesanan Selesai",
+            value: orderStats.delivered,
+          },
+          {
+            label: "Dibatalkan",
+            value: orderStats.cancelled,
+          },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+          >
+            <p className="text-sm text-slate-500">
+              {stat.label}
+            </p>
+
+            <p className="mt-2 text-2xl font-bold text-slate-900">
+              {stat.value}
+            </p>
+          </div>
+        ))}
+      </div>
+
         <div className="mt-5">
         <input
           type="text"
