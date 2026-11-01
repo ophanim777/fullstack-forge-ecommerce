@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   getUserProfile,
+  getCurrentUser,
   updateProfile,
   uploadAvatar,
 } from "../services/user.service";
