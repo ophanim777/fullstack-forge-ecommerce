@@ -50,6 +50,29 @@ export default function Cart() {
     loadCart();
   }, [loadCart]);
 
+  useEffect(() => {
+  async function loadShippingProfile() {
+    try {
+      const response = await getCurrentUser();
+      const profile = response.user;
+
+      setShippingName(
+        `${profile.firstName || ""} ${profile.lastName || ""}`.trim()
+      );
+      setShippingPhone(profile.phone || "");
+      setShippingAddress(profile.address || "");
+      setShippingCity(profile.city || "");
+    } catch (error) {
+      console.error(
+        "Gagal mengambil informasi pengiriman dari profil:",
+        error
+      );
+    }
+  }
+
+  loadShippingProfile();
+}, []);
+
   async function handleQuantityChange(item, quantity) {
     if (quantity < 1) return;
 
