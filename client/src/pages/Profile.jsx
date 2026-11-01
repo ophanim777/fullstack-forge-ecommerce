@@ -42,10 +42,13 @@ export default function Profile() {
       setUser(profile);
 
       setForm({
-        firstName: profile.firstName || "",
-        lastName: profile.lastName || "",
-        bio: profile.bio || "",
-      });
+          firstName: profile.firstName || "",
+          lastName: profile.lastName || "",
+          phone: profile.phone || "",
+          address: profile.address || "",
+          city: profile.city || "",
+          bio: profile.bio || "",
+        });
     } catch (error) {
       setError(
         error.response?.data?.message ||
