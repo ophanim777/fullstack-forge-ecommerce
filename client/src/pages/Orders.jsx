@@ -60,20 +60,39 @@ export default function Orders() {
 }, [selectedStatus, searchQuery]);
 
     const filteredOrders = orders.filter((order) => {
-  const matchesStatus =
-    selectedStatus === "ALL" ||
-    order.status === selectedStatus;
+    const matchesStatus =
+      selectedStatus === "ALL" ||
+      order.status === selectedStatus;
 
-  const query = searchQuery.toLowerCase().trim();
+    const query = searchQuery.toLowerCase().trim();
 
-  const matchesSearch =
-    order.id.toLowerCase().includes(query) ||
-    order.items.some((item) =>
-      item.product.name.toLowerCase().includes(query)
-    );
+    const matchesSearch =
+      order.id.toLowerCase().includes(query) ||
+      order.items.some((item) =>
+        item.product.name.toLowerCase().includes(query)
+      );
 
-  return matchesStatus && matchesSearch;
-});
+    return matchesStatus && matchesSearch;
+  });
+
+    const orderStats = {
+    total: orders.length,
+    pending: orders.filter(
+      (order) => order.status === "PENDING"
+    ).length,
+    processing: orders.filter(
+      (order) => order.status === "PROCESSING"
+    ).length,
+    shipped: orders.filter(
+      (order) => order.status === "SHIPPED"
+    ).length,
+    delivered: orders.filter(
+      (order) => order.status === "DELIVERED"
+    ).length,
+    cancelled: orders.filter(
+      (order) => order.status === "CANCELLED"
+    ).length,
+  };
 
     const totalPages = Math.ceil(
       filteredOrders.length / ordersPerPage
