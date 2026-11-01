@@ -70,6 +70,31 @@ export default function Orders() {
           Lihat riwayat dan status pesanan kamu.
         </p>
 
+        <div className="mt-6 flex flex-wrap gap-2">
+          {[
+            { value: "ALL", label: "Semua" },
+            { value: "PENDING", label: "Menunggu Pembayaran" },
+            { value: "PAID", label: "Sudah Dibayar" },
+            { value: "PROCESSING", label: "Diproses" },
+            { value: "SHIPPED", label: "Dikirim" },
+            { value: "DELIVERED", label: "Selesai" },
+            { value: "CANCELLED", label: "Dibatalkan" },
+          ].map((status) => (
+            <button
+              key={status.value}
+              type="button"
+              onClick={() => setSelectedStatus(status.value)}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+                selectedStatus === status.value
+                  ? "bg-indigo-600 text-white"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+              }`}
+            >
+              {status.label}
+            </button>
+          ))}
+        </div>
+
         {loading && (
           <p className="mt-6 text-slate-600">
             Memuat pesanan...
