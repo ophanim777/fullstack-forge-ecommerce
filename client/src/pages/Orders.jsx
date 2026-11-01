@@ -196,6 +196,16 @@ export default function Orders() {
             ))}
           </div>
         )}
+        {!loading &&
+          !error &&
+          orders.length > 0 &&
+          filteredOrders.length === 0 && (
+            <div className="mt-6 rounded-xl border bg-white p-8 text-center">
+              <p className="font-semibold text-slate-800">
+                Tidak ada pesanan dengan status ini.
+              </p>
+            </div>
+          )}
       </section>
     </MainLayout>
   );
