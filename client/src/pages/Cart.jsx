@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { createOrder } from "../services/order.service";
+import { getCurrentUser } from "../services/user.service";
 import MainLayout from "../layouts/MainLayout";
 import {
   getCart,
