@@ -228,6 +228,55 @@ export default function Orders() {
             ))}
           </div>
         )}
+
+        {!loading &&
+          !error &&
+          filteredOrders.length > ordersPerPage && (
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentPage((page) => Math.max(page - 1, 1))
+                }
+                disabled={currentPage === 1}
+                className="rounded-lg border px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Sebelumnya
+              </button>
+
+              {Array.from(
+                { length: totalPages },
+                (_, index) => index + 1
+              ).map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => setCurrentPage(page)}
+                  className={`rounded-lg px-4 py-2 text-sm font-medium ${
+                    currentPage === page
+                      ? "bg-indigo-600 text-white"
+                      : "border text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentPage((page) =>
+                    Math.min(page + 1, totalPages)
+                  )
+                }
+                disabled={currentPage === totalPages}
+                className="rounded-lg border px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Berikutnya
+              </button>
+            </div>
+        )}
+
         {!loading &&
           !error &&
           orders.length > 0 &&
