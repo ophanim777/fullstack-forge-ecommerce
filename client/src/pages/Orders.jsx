@@ -71,6 +71,17 @@ export default function Orders() {
   return matchesStatus && matchesSearch;
 });
 
+    const totalPages = Math.ceil(
+      filteredOrders.length / ordersPerPage
+    );
+
+    const startIndex = (currentPage - 1) * ordersPerPage;
+
+    const currentOrders = filteredOrders.slice(
+      startIndex,
+      startIndex + ordersPerPage
+    );
+
   return (
     <MainLayout>
       <section>
