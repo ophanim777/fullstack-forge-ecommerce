@@ -27,7 +27,7 @@ export async function createPayment(userId, orderId) {
       paymentUrl: order.paymentUrl,
     };
   }
-  
+
 
      const grossAmount = Number(order.total);
 
@@ -36,6 +36,18 @@ export async function createPayment(userId, orderId) {
     grossAmount <= 0
   ) {
     throw new Error("INVALID_ORDER_AMOUNT");
+  }
+
+
+  const transaction = await snap.createTransaction({
+    transaction_details: {
+      order_id: order.id,
+      gross_amount: grossAmount,
+    },
+  });
+
+  if (!transaction.token || !transaction.redirect_url) {
+    throw new Error("MIDTRANS_TRANSACTION_FAILED");
   }
 
 
