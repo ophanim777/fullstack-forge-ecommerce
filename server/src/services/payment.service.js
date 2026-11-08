@@ -27,6 +27,16 @@ export async function createPayment(userId, orderId) {
       paymentUrl: order.paymentUrl,
     };
   }
+  
+
+     const grossAmount = Number(order.total);
+
+  if (
+    !Number.isSafeInteger(grossAmount) ||
+    grossAmount <= 0
+  ) {
+    throw new Error("INVALID_ORDER_AMOUNT");
+  }
 
 
 
