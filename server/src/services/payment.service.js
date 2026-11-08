@@ -50,6 +50,27 @@ export async function createPayment(userId, orderId) {
     throw new Error("MIDTRANS_TRANSACTION_FAILED");
   }
 
+  const updatedOrder = await prisma.order.updateMany({
+    where: {
+      id: order.id,
+      userId,
+      status: "PENDING",
+      paymentStatus: "PENDING",
+      snapToken: null,
+    },
+    data: {
+      snapToken: transaction.token,
+      paymentUrl: transaction.redirect_url,
+    },
+  });
 
+  if (updatedOrder.count !== 1) {
+    throw new Error("PAYMENT_INITIALIZATION_CONFLICT");
+  }
 
+  return {
+    orderId: order.id,
+    snapToken: transaction.token,
+    paymentUrl: transaction.redirect_url,
+  };
 }
