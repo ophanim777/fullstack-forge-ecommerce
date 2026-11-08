@@ -8,6 +8,10 @@ import {
   cancelOrderController,
 } from "../controllers/order.controller.js";
 
+import {
+  createPaymentController,
+} from "../controllers/payment.controller.js";
+
 import { authenticate } from "../middleware/auth.middleware.js";
 
 import { requireAdmin } from "../middleware/admin.middleware.js";
@@ -24,6 +28,12 @@ router.post(
   "/",
   authenticate,
   createOrderController
+);
+
+router.post(
+  "/:id/payment",
+  authenticate,
+  createPaymentController
 );
 
 router.get(
