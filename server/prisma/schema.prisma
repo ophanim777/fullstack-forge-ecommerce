@@ -136,27 +136,17 @@ model CartItem {
 model Order {
   id String @id @default(cuid())
 
-  status OrderStatus @default(PENDING)
+  status        OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
 
   total Decimal @db.Decimal(12, 2)
 
-  
-  shippingName    String?
-  shippingPhone   String?
-  shippingAddress String?
-  shippingCity    String?
-
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  items OrderItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([status])
+  snapToken             String?
+  paymentUrl            String?
+  paymentMethod         String?
+  paymentExpiresAt      DateTime?
+  paidAt                DateTime?
+  midtransTransactionId String?
 }
 
 model OrderItem {
