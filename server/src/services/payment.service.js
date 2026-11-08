@@ -12,6 +12,13 @@ export async function createPayment(userId, orderId) {
     throw new Error("ORDER_NOT_FOUND");
   }
 
+   if (
+    order.status !== "PENDING" ||
+    order.paymentStatus !== "PENDING"
+  ) {
+    throw new Error("ORDER_NOT_PAYABLE");
+  }
+
 
 
 }
