@@ -108,12 +108,9 @@ export async function updateOrderStatusController(req, res, next) {
     const { status } = req.body;
 
     const allowedStatuses = [
-      "PENDING",
-      "PAID",
-      "PROCESSING",
-      "SHIPPED",
-      "DELIVERED",
-      "CANCELLED",
+    "PROCESSING",
+    "SHIPPED",
+    "DELIVERED",
     ];
 
     if (!status || !allowedStatuses.includes(status)) {
