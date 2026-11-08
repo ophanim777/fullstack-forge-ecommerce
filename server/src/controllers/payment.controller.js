@@ -51,3 +51,14 @@ export async function createPaymentController(req, res, next) {
     return next(error);
   }
 }
+
+export async function paymentNotificationController(req, res, next) {
+  try {
+    return res.status(200).json({
+      success: true,
+      message: "Notifikasi Midtrans diterima.",
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
